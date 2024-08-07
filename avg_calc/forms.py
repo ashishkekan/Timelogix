@@ -1,3 +1,7 @@
+"""
+Forms for handling user registration, work time entries, and other functionalities.
+"""
+
 import calendar
 from datetime import datetime
 
@@ -9,6 +13,9 @@ from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task
 
 
 class RegisterForm(UserCreationForm):
+    """
+    Form for user registration including email field.
+    """
     email = forms.EmailField(required=True)
 
     class Meta:
@@ -16,6 +23,9 @@ class RegisterForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password2']
 
     def save(self, commit=True):
+        """
+        Save the user instance, adding the email field.
+        """
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
         if commit:
@@ -24,6 +34,9 @@ class RegisterForm(UserCreationForm):
 
 
 class WorkTimeEntryForm(forms.ModelForm):
+    """
+    Form for entering work time details.
+    """
     date = forms.DateField(widget=forms.widgets.DateInput(attrs={"type": "date"}))
 
     class Meta:
@@ -38,10 +51,16 @@ class WorkTimeEntryForm(forms.ModelForm):
 
 
 class UploadExcelForm(forms.Form):
+    """
+    Form for uploading an Excel file.
+    """
     excel_file = forms.FileField(label='Upload Excel File')
 
 
 class MonthChoiceForm(forms.Form):
+    """
+    Form for selecting a month.
+    """
     month = forms.ChoiceField(
         choices=[(str(i), calendar.month_name[i]) for i in range(1, 13)],
         label="Select Month",
@@ -50,6 +69,9 @@ class MonthChoiceForm(forms.Form):
 
 
 class DailyWorkSummaryForm(forms.ModelForm):
+    """
+    Form for summarizing daily work details.
+    """
     class Meta:
         model = DailyWorkSummary
         fields = ['date']
@@ -59,6 +81,9 @@ class DailyWorkSummaryForm(forms.ModelForm):
 
 
 class SalaryExpensesForm(forms.ModelForm):
+    """
+    Form for entering salary expenses.
+    """
     class Meta:
         model = SalaryExpenses
         fields = ['salary']
@@ -68,6 +93,9 @@ class SalaryExpensesForm(forms.ModelForm):
 
 
 class LeaveForm(forms.ModelForm):
+    """
+    Form for applying for leave.
+    """
     class Meta:
         model = Leave
         fields = ['start_date', 'end_date', 'reason']
@@ -78,6 +106,9 @@ class LeaveForm(forms.ModelForm):
 
 
 class TaskForm(forms.ModelForm):
+    """
+    Form for managing tasks.
+    """
     class Meta:
         model = Task
         fields = [
@@ -94,11 +125,17 @@ class TaskForm(forms.ModelForm):
 
 
 class ChangePasswordForm(forms.Form):
+    """
+    Form for changing user password.
+    """
     old_password = forms.CharField(widget=forms.PasswordInput, label="Current Password")
     new_password = forms.CharField(widget=forms.PasswordInput, label="New Password")
     confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirm New Password")
 
     def clean(self):
+        """
+        Validate that new password and confirm password match.
+        """
         super().clean()
         new_password = self.cleaned_data.get("new_password")
         confirm_password = self.cleaned_data.get("confirm_password")
