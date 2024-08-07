@@ -1,10 +1,16 @@
-from datetime import datetime
+"""
+Models for tracking work time entries, daily work summaries, salary expenses, leave, tasks, and recent activities.
+"""
 
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 
 
 class WorkTimeEntry(models.Model):
+    """
+    Model for storing work time entries.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     login_time = models.TimeField()
@@ -17,6 +23,9 @@ class WorkTimeEntry(models.Model):
         return f"{self.user.username} - {self.date}"
 
     def save(self, *args, **kwargs):
+        """
+        Calculate total work time before saving the instance.
+        """
         login_datetime = datetime.combine(self.date, self.login_time)
         logout_datetime = datetime.combine(self.date, self.logout_time)
         breakout_datetime = datetime.combine(self.date, self.breakout_time)
@@ -28,7 +37,11 @@ class WorkTimeEntry(models.Model):
         super().save(*args, **kwargs)
 
 
+# pylint: disable=too-few-public-methods
 class DailyWorkSummary(models.Model):
+    """
+    Model for summarizing daily work details.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     average_work_time = models.DurationField()
@@ -39,6 +52,9 @@ class DailyWorkSummary(models.Model):
 
 
 class SalaryExpenses(models.Model):
+    """
+    Model for storing salary expenses.
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     salary = models.DecimalField(max_digits=10, decimal_places=2)
 
@@ -47,6 +63,9 @@ class SalaryExpenses(models.Model):
 
 
 class Leave(models.Model):
+    """
+    Model for storing leave details.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
@@ -57,6 +76,9 @@ class Leave(models.Model):
 
 
 class Task(models.Model):
+    """
+    Model for storing task details.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task_name = models.CharField(max_length=255)
     expected_time = models.DurationField()
@@ -69,9 +91,13 @@ class Task(models.Model):
 
 
 class RecentActivity(models.Model):
+    """
+    Model for storing recent activities.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.description}"
+# pylint: enable=too-few-public-methods
