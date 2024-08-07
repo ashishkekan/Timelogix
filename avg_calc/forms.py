@@ -19,6 +19,10 @@ class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
     class Meta:
+        """
+        Metadata for the RegisterForm.
+        Specifies the model and fields to include in the form.
+        """
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
@@ -40,6 +44,10 @@ class WorkTimeEntryForm(forms.ModelForm):
     date = forms.DateField(widget=forms.widgets.DateInput(attrs={"type": "date"}))
 
     class Meta:
+        """
+        Metadata for the WorkTimeEntryForm.
+        Specifies the model and fields to include in the form, and custom widgets for time inputs.
+        """
         model = WorkTimeEntry
         fields = ['date', 'login_time', 'logout_time', 'breakout_time', 'breakin_time']
         widgets = {
@@ -73,6 +81,10 @@ class DailyWorkSummaryForm(forms.ModelForm):
     Form for summarizing daily work details.
     """
     class Meta:
+        """
+        Metadata for the DailyWorkSummaryForm.
+        Specifies the model and fields to include in the form.
+        """
         model = DailyWorkSummary
         fields = ['date']
         widgets = {
@@ -85,6 +97,10 @@ class SalaryExpensesForm(forms.ModelForm):
     Form for entering salary expenses.
     """
     class Meta:
+        """
+        Metadata for the SalaryExpensesForm.
+        Specifies the model and fields to include in the form, and custom widgets for input fields.
+        """
         model = SalaryExpenses
         fields = ['salary']
         widgets = {
@@ -97,6 +113,10 @@ class LeaveForm(forms.ModelForm):
     Form for applying for leave.
     """
     class Meta:
+        """
+        Metadata for the LeaveForm.
+        Specifies the model and fields to include in the form, and custom widgets for date inputs.
+        """
         model = Leave
         fields = ['start_date', 'end_date', 'reason']
         widgets = {
@@ -110,6 +130,10 @@ class TaskForm(forms.ModelForm):
     Form for managing tasks.
     """
     class Meta:
+        """
+        Metadata for the TaskForm.
+        Specifies the model and fields to include in the form, and custom widgets for date and time inputs.
+        """
         model = Task
         fields = [
             "task_name",
