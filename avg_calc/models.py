@@ -1,5 +1,6 @@
 """
-Models for tracking work time entries, daily work summaries, salary expenses, leave, tasks, and recent activities.
+Models for tracking work time entries, daily work summaries, salary expenses,
+leave, tasks, and recent activities.
 """
 
 from datetime import datetime
