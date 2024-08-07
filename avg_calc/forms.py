@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 
 from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task
 
-
+# pylint: disable=too-few-public-methods
 class RegisterForm(UserCreationForm):
     """
     Form for user registration including email field.
@@ -171,3 +171,4 @@ class ChangePasswordForm(forms.Form):
             )
 
         return self.cleaned_data
+# pylint: enable=too-few-public-methods
