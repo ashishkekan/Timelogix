@@ -91,3 +91,22 @@ class TaskForm(forms.ModelForm):
             "start_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "expected_completion_date": forms.DateInput(attrs={"type": "date"}),
         }
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput, label="Current Password")
+    new_password = forms.CharField(widget=forms.PasswordInput, label="New Password")
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirm New Password")
+
+    def clean(self):
+        super().clean()
+        new_password = self.cleaned_data.get("new_password")
+        confirm_password = self.cleaned_data.get("confirm_password")
+
+        if new_password and confirm_password and new_password != confirm_password:
+            self.add_error(
+                'confirm_password',
+                "New password and Confirm new password do not match!"
+            )
+
+        return self.cleaned_data

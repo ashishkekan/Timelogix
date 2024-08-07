@@ -22,7 +22,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5>Personal Details</h5>
-                    <form method="post" %}">
+                    <form method="post" action="{% url 'profile' %}">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="first_name">First Name</label>
@@ -44,7 +44,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5>Change Password</h5>
-                    <form method="post" action="">
+                    <form method="post" action="{% url 'profile' %}">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="old_password">Current Password</label>
@@ -67,7 +67,6 @@
                 <div class="card-body">
                     <h5>Recent Activity</h5>
                     <ul class="list-group">
-                        <!-- Loop through user's recent activities -->
                         {% for activity in recent_activities %}
                             <li class="list-group-item">{{ activity.description }} <span class="text-muted">on {{ activity.timestamp }}</span></li>
                         {% endfor %}
