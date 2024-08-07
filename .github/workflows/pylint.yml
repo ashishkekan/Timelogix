@@ -23,8 +23,8 @@ jobs:
 
     - name: Find and lint Python files
       run: |
-        # Find Python files and run pylint on them
-        FILES=$(git ls-files '*.py')
+        # Find Python files and run pylint on them, excluding migrations
+        FILES=$(git ls-files '*.py' | grep -v '/migrations/')
         if [ -z "$FILES" ]; then
           echo "No Python files found."
           exit 0
