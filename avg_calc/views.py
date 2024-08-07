@@ -23,6 +23,10 @@ from .templatetags.custom_filter import format_duration
 TARGET_WORK_TIME = timedelta(hours=8, minutes=40)
 
 
+def log_activity(user, description):
+    RecentActivity.objects.create(user=user, description=description)
+
+
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -41,7 +45,7 @@ def login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
-            log_activity(user, "Logged in")
+            log_activity(request.user, "Logged in")
             return redirect("dashboard")
     else:
         form = AuthenticationForm()
@@ -64,6 +68,7 @@ def profile_view(request):
                 if request.user.check_password(old_password):
                     request.user.set_password(new_password)
                     request.user.save()
+                    log_activity(request.user, "Change Password")
                     update_session_auth_hash(request, request.user)
                     messages.success(request, 'Your password was successfully updated!')
                     log_activity(request.user, "Changed password")
@@ -94,6 +99,7 @@ def submit_work_time(request):
             work_time_entry = form.save(commit=False)
             work_time_entry.user = request.user
             work_time_entry.save()
+            log_activity(request.user, "Submit Worklog")
             return redirect("dashboard")
     else:
         form = WorkTimeEntryForm()
@@ -146,6 +152,7 @@ def upload_time_logs(request):
                     breakout_time=row["Break-Out Time"],
                     breakin_time=row["Break-In Time"],
                 )
+                log_activity(request.user, "Upload Work Time")
 
             return redirect("dashboard")
     else:
@@ -285,6 +292,7 @@ def update_salary_expenses(request):
         form = SalaryExpensesForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
+            log_activity(request.user, "Update salary")
             return redirect('salary_expenses_success')
     else:
         form = SalaryExpensesForm(instance=profile)
@@ -329,7 +337,7 @@ def calculate_work_time(request):
                 seconds=additional_seconds_needed
             )
             summary.save()
-
+            log_activity(request.user, "Calculate Work Time")
             return redirect("work_summary_detail", pk=summary.pk)
     else:
         form = DailyWorkSummaryForm()
@@ -355,6 +363,7 @@ def add_leave(request):
             leave = form.save(commit=False)
             leave.user = request.user
             leave.save()
+            log_activity(request.user, "Apply Leave")
             return redirect("dashboard")
     else:
         form = LeaveForm()
@@ -369,6 +378,7 @@ def create_task(request):
             task = form.save(commit=False)
             task.user = request.user
             task.save()
+            log_activity(request.user, "Create Task")
             return redirect('task_list')
     else:
         form = TaskForm()
@@ -379,8 +389,3 @@ def create_task(request):
 def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'worktime/task_list.html', {'tasks': tasks})
-
-
-@login_required()
-def log_activity(user, description):
-    RecentActivity.objects.create(user=user, description=description)
