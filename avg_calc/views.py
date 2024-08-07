@@ -5,8 +5,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import WorkTimeEntryForm, UploadExcelForm, MonthChoiceForm, RegisterForm, SalaryExpensesForm, \
-    DailyWorkSummaryForm, LeaveForm, TaskForm
+from .forms import (
+    WorkTimeEntryForm,
+    UploadExcelForm,
+    MonthChoiceForm,
+    RegisterForm,
+    SalaryExpensesForm,
+    DailyWorkSummaryForm,
+    LeaveForm,
+    TaskForm,
+)
 from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task
 from .templatetags.custom_filter import format_duration
 
@@ -61,6 +69,21 @@ def submit_work_time(request):
 
 
 @login_required
+def download_template(request):
+    df = pd.DataFrame(
+        columns=["Date", "Login Time", "Logout Time", "Break-Out Time", "Break-In Time"]
+    )
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = 'attachment; filename="time_log_template.xlsx"'
+    with pd.ExcelWriter(response, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Time Logs")
+
+    return response
+
+
+@login_required
 def upload_time_logs(request):
     if request.method == "POST":
         form = UploadExcelForm(request.POST, request.FILES)
@@ -100,40 +123,28 @@ def upload_time_logs(request):
 
 
 @login_required
-def download_template(request):
-    df = pd.DataFrame(
-        columns=["Date", "Login Time", "Logout Time", "Break-Out Time", "Break-In Time"]
-    )
-    response = HttpResponse(
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    response["Content-Disposition"] = 'attachment; filename="time_log_template.xlsx"'
-    with pd.ExcelWriter(response, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Time Logs")
-
-    return response
-
-
-@login_required
 def dashboard(request):
     today = datetime.now().date()
     month_form = MonthChoiceForm(request.GET or None)
-    selected_month = int(month_form.data.get('month', today.month))
+    selected_month = int(month_form.data.get("month", today.month))
     selected_year = today.year
 
     start_of_month = datetime(selected_year, selected_month, 1).date()
-    end_of_month = (start_of_month.replace(month=selected_month % 12 + 1, day=1) - timedelta(days=1))
+    end_of_month = start_of_month.replace(
+        month=selected_month % 12 + 1, day=1
+    ) - timedelta(days=1)
 
     leaves = Leave.objects.filter(
-        user=request.user,
-        start_date__lte=end_of_month,
-        end_date__gte=start_of_month
+        user=request.user, start_date__lte=end_of_month, end_date__gte=start_of_month
     )
 
     leave_days = set()
     for leave in leaves:
         leave_days.update(
-            [leave.start_date + timedelta(days=i) for i in range((leave.end_date - leave.start_date).days + 1)]
+            [
+                leave.start_date + timedelta(days=i)
+                for i in range((leave.end_date - leave.start_date).days + 1)
+            ]
         )
 
     entries = WorkTimeEntry.objects.filter(
@@ -200,13 +211,17 @@ def total_expenses(request):
     month_form = MonthChoiceForm(request.GET or None)
 
     today = datetime.now().date()
-    selected_month = int(request.GET.get('month', today.month))
-    selected_year = int(request.GET.get('year', today.year))
+    selected_month = int(request.GET.get("month", today.month))
+    selected_year = int(request.GET.get("year", today.year))
 
     start_of_month = datetime(selected_year, selected_month, 1).date()
-    end_of_month = (start_of_month.replace(month=selected_month % 12 + 1, day=1) - timedelta(days=1))
+    end_of_month = start_of_month.replace(
+        month=selected_month % 12 + 1, day=1
+    ) - timedelta(days=1)
 
-    entries = WorkTimeEntry.objects.filter(user=user, date__range=[start_of_month, end_of_month])
+    entries = WorkTimeEntry.objects.filter(
+        user=user, date__range=[start_of_month, end_of_month]
+    )
     total_lunch_expenses = entries.count() * 50
 
     pf = 200
@@ -215,15 +230,15 @@ def total_expenses(request):
     balance = payment - total_lunch_expenses
 
     context = {
-        'salary': payment,
-        'pf': pf,
-        'entries': entries,
-        'total_lunch_expenses': total_lunch_expenses,
-        'balance': balance,
-        'month': start_of_month.strftime('%B %Y'),
-        'month_form': month_form
+        "salary": payment,
+        "pf": pf,
+        "entries": entries,
+        "total_lunch_expenses": total_lunch_expenses,
+        "balance": balance,
+        "month": start_of_month.strftime("%B %Y"),
+        "month_form": month_form,
     }
-    return render(request, 'worktime/total_expenses.html', context)
+    return render(request, "worktime/total_expenses.html", context)
 
 
 @login_required
@@ -258,7 +273,9 @@ def calculate_work_time(request):
             summary.user = request.user
 
             selected_date = summary.date
-            entries = WorkTimeEntry.objects.filter(user=request.user, date=selected_date)
+            entries = WorkTimeEntry.objects.filter(
+                user=request.user, date=selected_date
+            )
 
             total_work_seconds = sum(
                 entry.total_work_time.total_seconds()
@@ -271,10 +288,14 @@ def calculate_work_time(request):
 
             additional_seconds_needed = 0
             if average_work_seconds < TARGET_WORK_TIME.total_seconds():
-                additional_seconds_needed = TARGET_WORK_TIME.total_seconds() - average_work_seconds
+                additional_seconds_needed = (
+                    TARGET_WORK_TIME.total_seconds() - average_work_seconds
+                )
 
             summary.average_work_time = timedelta(seconds=average_work_seconds)
-            summary.additional_time_needed = timedelta(seconds=additional_seconds_needed)
+            summary.additional_time_needed = timedelta(
+                seconds=additional_seconds_needed
+            )
             summary.save()
 
             return redirect("work_summary_detail", pk=summary.pk)
@@ -287,7 +308,11 @@ def calculate_work_time(request):
 @login_required
 def work_summary_detail(request, pk):
     summary = DailyWorkSummary.objects.get(pk=pk)
-    return render(request, "worktime/work_summary_detail.html", {"summary": summary})
+    return render(
+        request,
+        "worktime/work_summary_detail.html",
+        {"summary": summary}
+    )
 
 
 @login_required
@@ -305,12 +330,6 @@ def add_leave(request):
 
 
 @login_required()
-def task_list(request):
-    tasks = Task.objects.filter(user=request.user)
-    return render(request, 'worktime/task_list.html', {'tasks': tasks})
-
-
-@login_required()
 def create_task(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
@@ -322,3 +341,9 @@ def create_task(request):
     else:
         form = TaskForm()
     return render(request, 'worktime/task_form.html', {'form': form})
+
+
+@login_required()
+def task_list(request):
+    tasks = Task.objects.filter(user=request.user)
+    return render(request, 'worktime/task_list.html', {'tasks': tasks})

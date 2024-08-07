@@ -49,21 +49,21 @@ class MonthChoiceForm(forms.Form):
     )
 
 
-class SalaryExpensesForm(forms.ModelForm):
-    class Meta:
-        model = SalaryExpenses
-        fields = ['salary']
-        widgets = {
-            'salary': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
-        }
-
-
 class DailyWorkSummaryForm(forms.ModelForm):
     class Meta:
         model = DailyWorkSummary
         fields = ['date']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class SalaryExpensesForm(forms.ModelForm):
+    class Meta:
+        model = SalaryExpenses
+        fields = ['salary']
+        widgets = {
+            'salary': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
         }
 
 
