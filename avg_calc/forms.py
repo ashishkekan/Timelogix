@@ -132,7 +132,8 @@ class TaskForm(forms.ModelForm):
     class Meta:
         """
         Metadata for the TaskForm.
-        Specifies the model and fields to include in the form, and custom widgets for date and time inputs.
+        Specifies the model and fields to include in the form,
+        and custom widgets for date and time inputs.
         """
         model = Task
         fields = [
