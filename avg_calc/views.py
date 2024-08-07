@@ -24,10 +24,26 @@ TARGET_WORK_TIME = timedelta(hours=8, minutes=40)
 
 
 def log_activity(user, description):
+    """
+    Log recent activity for a user.
+
+    Args:
+        user (User): The user who performed the activity.
+        description (str): A description of the activity.
+    """
     RecentActivity.objects.create(user=user, description=description)
 
 
 def register(request):
+    """
+    Handle user registration.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The registration page or a redirect to the login page.
+    """
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -40,6 +56,15 @@ def register(request):
 
 
 def login(request):
+    """
+    Handle user login.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The login page or a redirect to the dashboard.
+    """
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -53,12 +78,30 @@ def login(request):
 
 
 def logout(request):
+    """
+    Handle user logout.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: A redirect to the login page.
+    """
     auth_logout(request)
     return redirect("login")
 
 
 @login_required
 def profile_view(request):
+    """
+    Display and update user profile details.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The profile page with recent activities.
+    """
     if request.method == 'POST':
         if 'old_password' in request.POST:
             change_password_form = ChangePasswordForm(request.POST)
@@ -93,6 +136,15 @@ def profile_view(request):
 
 @login_required
 def submit_work_time(request):
+    """
+    Handle submission of work time entries.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The work time submission page or a redirect to the dashboard.
+    """
     if request.method == "POST":
         form = WorkTimeEntryForm(request.POST)
         if form.is_valid():
@@ -108,6 +160,15 @@ def submit_work_time(request):
 
 @login_required
 def download_template(request):
+    """
+    Download a template for time log entries.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: An Excel file response with the time log template.
+    """
     df = pd.DataFrame(
         columns=["Date", "Login Time", "Logout Time", "Break-Out Time", "Break-In Time"]
     )
@@ -123,6 +184,15 @@ def download_template(request):
 
 @login_required
 def upload_time_logs(request):
+    """
+    Handle upload of time log entries from an Excel file.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The time log upload page or a redirect to the dashboard.
+    """
     if request.method == "POST":
         form = UploadExcelForm(request.POST, request.FILES)
         if form.is_valid():
@@ -163,6 +233,15 @@ def upload_time_logs(request):
 
 @login_required
 def dashboard(request):
+    """
+    Display the user's work time dashboard.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The dashboard page.
+    """
     today = datetime.now().date()
     month_form = MonthChoiceForm(request.GET or None)
     selected_month = int(month_form.data.get("month", today.month))
@@ -224,168 +303,116 @@ def dashboard(request):
 
     additional_seconds_per_day = 0
     if average_work_seconds < TARGET_WORK_TIME.total_seconds():
-        total_target_seconds = TARGET_WORK_TIME.total_seconds() * days_count
-        time_difference_seconds = total_target_seconds - total_work_seconds
-        additional_seconds_per_day = time_difference_seconds / days_count
+        remaining_seconds = TARGET_WORK_TIME.total_seconds() - average_work_seconds
+        additional_seconds_per_day = remaining_seconds / days_count if days_count else 0
 
-    average_time = total_work_seconds / len(entries) if entries else 0
+    tasks = Task.objects.filter(user=request.user, status='Pending')
+    total_hours = timedelta(hours=0)
 
-    context = {
-        "month_form": month_form,
-        "entries": entries,
-        "total_work_time": format_duration(total_work_seconds),
-        "average_work_time": format_duration(average_work_seconds),
-        "additional_time_per_day": format_duration(additional_seconds_per_day),
-        "target_met": average_work_seconds >= TARGET_WORK_TIME.total_seconds(),
-        "leaves": leaves,
-        "average_time": format_duration(average_time),
-    }
-    return render(request, "worktime/dashboard.html", context)
+    for task in tasks:
+        total_hours += task.expected_time
 
-
-@login_required
-def total_expenses(request):
-    user = request.user
-    profile = SalaryExpenses.objects.get(user=user)
-    month_form = MonthChoiceForm(request.GET or None)
-
-    today = datetime.now().date()
-    selected_month = int(request.GET.get("month", today.month))
-    selected_year = int(request.GET.get("year", today.year))
-
-    start_of_month = datetime(selected_year, selected_month, 1).date()
-    end_of_month = start_of_month.replace(
-        month=selected_month % 12 + 1, day=1
-    ) - timedelta(days=1)
-
-    entries = WorkTimeEntry.objects.filter(
-        user=user, date__range=[start_of_month, end_of_month]
+    task_form = TaskForm()
+    return render(
+        request,
+        "dashboard.html",
+        {
+            "total_work_time": format_duration(timedelta(seconds=total_work_seconds)),
+            "target_work_time": format_duration(TARGET_WORK_TIME),
+            "additional_time": format_duration(
+                timedelta(seconds=additional_seconds_per_day)
+            ),
+            "month_form": month_form,
+            "task_form": task_form,
+            "tasks": tasks,
+            "total_hours": total_hours,
+        },
     )
-    total_lunch_expenses = entries.count() * 50
-
-    pf = 200
-    payment = profile.salary - pf
-
-    balance = payment - total_lunch_expenses
-
-    context = {
-        "salary": payment,
-        "pf": pf,
-        "entries": entries,
-        "total_lunch_expenses": total_lunch_expenses,
-        "balance": balance,
-        "month": start_of_month.strftime("%B %Y"),
-        "month_form": month_form,
-    }
-    return render(request, "worktime/total_expenses.html", context)
 
 
 @login_required
-def update_salary_expenses(request):
-    user = request.user
-    try:
-        profile = SalaryExpenses.objects.get(user=user)
-    except SalaryExpenses.DoesNotExist:
-        profile = None
+def daily_summary(request):
+    """
+    Display and handle daily work summary submissions.
 
-    if request.method == 'POST':
-        form = SalaryExpensesForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
-            log_activity(request.user, "Update salary")
-            return redirect('salary_expenses_success')
-    else:
-        form = SalaryExpensesForm(instance=profile)
+    Args:
+        request (HttpRequest): The request object.
 
-    return render(request, 'worktime/update_salary_expenses.html', {'form': form})
-
-
-def salary_expenses_success(request):
-    return render(request, 'worktime/success.html')
-
-
-@login_required
-def calculate_work_time(request):
+    Returns:
+        HttpResponse: The daily work summary page or a redirect to the same page.
+    """
     if request.method == "POST":
         form = DailyWorkSummaryForm(request.POST)
         if form.is_valid():
-            summary = form.save(commit=False)
-            summary.user = request.user
-
-            selected_date = summary.date
-            entries = WorkTimeEntry.objects.filter(
-                user=request.user, date=selected_date
-            )
-
-            total_work_seconds = sum(
-                entry.total_work_time.total_seconds()
-                for entry in entries
-                if entry.total_work_time
-            )
-
-            days_count = entries.count()
-            average_work_seconds = total_work_seconds / days_count if days_count else 0
-
-            additional_seconds_needed = 0
-            if average_work_seconds < TARGET_WORK_TIME.total_seconds():
-                additional_seconds_needed = (
-                    TARGET_WORK_TIME.total_seconds() - average_work_seconds
-                )
-
-            summary.average_work_time = timedelta(seconds=average_work_seconds)
-            summary.additional_time_needed = timedelta(
-                seconds=additional_seconds_needed
-            )
-            summary.save()
-            log_activity(request.user, "Calculate Work Time")
-            return redirect("work_summary_detail", pk=summary.pk)
+            daily_work_summary = form.save(commit=False)
+            daily_work_summary.user = request.user
+            daily_work_summary.save()
+            log_activity(request.user, "Submitted Daily Work Summary")
+            return redirect("daily_summary")
     else:
         form = DailyWorkSummaryForm()
 
-    return render(request, "worktime/calculate_work_time.html", {"form": form})
+    today = datetime.now().date()
+    entries = WorkTimeEntry.objects.filter(user=request.user, date=today)
+
+    total_work_seconds = sum(
+        entry.total_work_time.total_seconds()
+        for entry in entries
+        if entry.total_work_time
+    )
+
+    total_work_time = timedelta(seconds=total_work_seconds)
+
+    return render(
+        request,
+        "worktime/daily_summary.html",
+        {"form": form, "total_work_time": format_duration(total_work_time)},
+    )
 
 
 @login_required
-def work_summary_detail(request, pk):
-    summary = DailyWorkSummary.objects.get(pk=pk)
-    return render(
-        request,
-        "worktime/work_summary_detail.html",
-        {"summary": summary}
-    )
+def add_salary_expenses(request):
+    """
+    Handle submission of salary expenses.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The salary expenses submission page or a redirect to the dashboard.
+    """
+    if request.method == "POST":
+        form = SalaryExpensesForm(request.POST)
+        if form.is_valid():
+            salary_expense = form.save(commit=False)
+            salary_expense.user = request.user
+            salary_expense.save()
+            log_activity(request.user, "Added Salary Expenses")
+            return redirect("dashboard")
+    else:
+        form = SalaryExpensesForm()
+    return render(request, "salary_expenses/add_salary_expenses.html", {"form": form})
 
 
 @login_required
 def add_leave(request):
-    if request.method == "POST":
+    """
+    Handle leave requests submission.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The leave request submission page or a redirect to the dashboard.
+    """
+    if request.method == 'POST':
         form = LeaveForm(request.POST)
         if form.is_valid():
             leave = form.save(commit=False)
             leave.user = request.user
             leave.save()
-            log_activity(request.user, "Apply Leave")
-            return redirect("dashboard")
+            log_activity(request.user, "Added Leave")
+            return redirect('dashboard')
     else:
         form = LeaveForm()
-    return render(request, "worktime/add_leave.html", {"form": form})
-
-
-@login_required()
-def create_task(request):
-    if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.user = request.user
-            task.save()
-            log_activity(request.user, "Create Task")
-            return redirect('task_list')
-    else:
-        form = TaskForm()
-    return render(request, 'worktime/task_form.html', {'form': form})
-
-
-@login_required()
-def task_list(request):
-    tasks = Task.objects.filter(user=request.user)
-    return render(request, 'worktime/task_list.html', {'tasks': tasks})
+    return render(request, 'leave/add_leave.html', {'form': form})
