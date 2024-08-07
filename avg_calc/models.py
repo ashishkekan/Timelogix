@@ -66,3 +66,12 @@ class Task(models.Model):
 
     def __str__(self):
         return self.task_name
+
+
+class RecentActivity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.description}"

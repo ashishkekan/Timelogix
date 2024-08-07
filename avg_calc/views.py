@@ -1,8 +1,10 @@
 import pandas as pd
 from datetime import timedelta, datetime
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth import login as auth_login, logout as auth_logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import (
@@ -13,9 +15,9 @@ from .forms import (
     SalaryExpensesForm,
     DailyWorkSummaryForm,
     LeaveForm,
-    TaskForm,
+    TaskForm, ChangePasswordForm,
 )
-from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task
+from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task, RecentActivity
 from .templatetags.custom_filter import format_duration
 
 TARGET_WORK_TIME = timedelta(hours=8, minutes=40)
@@ -25,7 +27,8 @@ def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            log_activity(user, "Registered an account")
             return redirect("login")
     else:
         form = RegisterForm()
@@ -38,6 +41,7 @@ def login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
+            log_activity(user, "Logged in")
             return redirect("dashboard")
     else:
         form = AuthenticationForm()
@@ -51,7 +55,35 @@ def logout(request):
 
 @login_required
 def profile_view(request):
-    return render(request, "registration/profile.html")
+    if request.method == 'POST':
+        if 'old_password' in request.POST:
+            change_password_form = ChangePasswordForm(request.POST)
+            if change_password_form.is_valid():
+                old_password = change_password_form.cleaned_data.get('old_password')
+                new_password = change_password_form.cleaned_data.get('new_password')
+                if request.user.check_password(old_password):
+                    request.user.set_password(new_password)
+                    request.user.save()
+                    update_session_auth_hash(request, request.user)
+                    messages.success(request, 'Your password was successfully updated!')
+                    log_activity(request.user, "Changed password")
+                else:
+                    messages.error(request, 'Current password is incorrect')
+        else:
+            request.user.first_name = request.POST.get('first_name', '')
+            request.user.last_name = request.POST.get('last_name', '')
+            request.user.email = request.POST.get('email', '')
+            request.user.save()
+            messages.success(request, 'Your details were successfully updated!')
+            log_activity(request.user, "Updated profile details")
+
+    recent_activities = RecentActivity.objects.filter(user=request.user).order_by('-timestamp')[:10]
+
+    context = {
+        'user': request.user,
+        'recent_activities': recent_activities
+    }
+    return render(request, 'registration/profile.html', context)
 
 
 @login_required
@@ -347,3 +379,8 @@ def create_task(request):
 def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'worktime/task_list.html', {'tasks': tasks})
+
+
+@login_required()
+def log_activity(user, description):
+    RecentActivity.objects.create(user=user, description=description)
