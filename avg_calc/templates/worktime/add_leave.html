@@ -1,0 +1,63 @@
+{% extends "navbar/base.html" %}
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .form-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    .form-container h2, .form-container h3 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-control {
+        border-radius: 5px;
+        border-color: #ced4da;
+        padding: 10px;
+    }
+    .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: block;
+        width: 100%;
+    }
+    .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<div class="form-container">
+    <h2>Leave Entry</h2>
+    <h3>Hi, {{ request.user.username }}</h3>
+
+    <form method="post" class="custom-form">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.start_date.label_tag }}
+            {{ form.start_date }}
+        </div>
+        <div class="form-group">
+            {{ form.end_date.label_tag }}
+            {{ form.end_date }}
+        </div>
+        <div class="form-group">
+            {{ form.reason.label_tag }}
+            {{ form.reason }}
+        </div>
+        <button class="btn btn-primary" type="submit">Submit Leave</button>
+    </form>
+</div>
+{% endblock %}

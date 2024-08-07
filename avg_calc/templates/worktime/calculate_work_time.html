@@ -1,0 +1,12 @@
+{% extends "navbar/base.html" %}
+
+{% block content %}
+  <h1>Calculate Work Time</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Calculate</button>
+    </div>
+  </form>
+{% endblock %}

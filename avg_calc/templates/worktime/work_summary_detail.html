@@ -1,0 +1,8 @@
+{% extends "navbar/base.html" %}
+
+{% block content %}
+  <h1>Work Summary for {{ summary.date }}</h1>
+  <p>User: {{ summary.user.username }}</p>
+  <p>Average Work Time: {{ summary.average_work_time }}</p>
+  <p>Additional Time Needed: {{ summary.additional_time_needed }}</p>
+{% endblock %}

@@ -1,0 +1,32 @@
+{%extends "navbar/base.html"%}
+{% block content %}
+<div class="container mt-5">
+  <div class="text-center mb-4">
+    <h2>Upload Time Logs</h2>
+    <h4>Hi, {{ request.user.username }}<br>Please upload your time logs here!</h4>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data" class="upload-form">
+            {% csrf_token %}
+            <div class="form-group">
+              {{ form.excel_file.label_tag }}
+              {{ form.excel_file }}
+              {% if form.excel_file.errors %}
+                <div class="text-danger">{{ form.excel_file.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="text-center">
+              <a href="{% url 'download_template' %}" class="btn btn-secondary mt-3">Export Template</a>
+              <button type="submit" class="btn btn-primary mt-3">Upload</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "navbar/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .table-container {
+      margin: 20px 0;
+    }
+    .custom-form {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+    }
+    .custom-form .form-group {
+        margin-right: 10px;
+    }
+    .custom-form .form-control {
+        border-radius: 5px;
+        border-color: #ced4da;
+        padding: 10px;
+    }
+    .custom-form .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+    .custom-form .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+    .dashboard-area {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background-color: #fff;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<h2>My Dashboard</h2>
+<h3>Hi, {{ request.user.username }}</h3>
+
+<form method="get" class="form-inline custom-form mb-4">
+    <div class="form-group">
+        {{ month_form.month.label_tag }}
+        {{ month_form.month }}
+    </div>
+    <button class="btn btn-primary" type="submit">Filter</button>
+</form>
+
+<div class="row mb-4">
+    <div class="dashboard-area">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Time In This Month</h5>
+                <p class="card-text">{{ total_work_time }}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Average Time Per Day</h5>
+                <p class="card-text">{{ average_work_time }}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">No. of Days in the Month</h5>
+                <p class="card-text">{{ entries.count }}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Average Time</h5>
+                <p class="card-text">{{ average_time }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                {% if target_met %}
+                    <h5 class="card-title text-success">Target Met</h5>
+                    <p class="card-text">The average work time meets the target.</p>
+                {% else %}
+                    <h5 class="card-title text-danger">Target Not Met</h5>
+                    <p class="card-text">The average work time does not meet the target.</p>
+                    <p class="card-text">You need to work an additional {{ additional_time_per_day }} per day to meet the average target of 8 hours and 40 minutes.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Login Time</th>
+                <th>Logout Time</th>
+                <th>Breakout Time</th>
+                <th>Breakin Time</th>
+                <th>Total Work Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.login_time|date:"h:i A" }}</td>
+                <td>{{ entry.logout_time|date:"h:i A" }}</td>
+                <td>{{ entry.breakout_time|date:"h:i A" }}</td>
+                <td>{{ entry.breakin_time|date:"h:i A" }}</td>
+                <td>{{ entry.total_work_time }}</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+{% endblock %}

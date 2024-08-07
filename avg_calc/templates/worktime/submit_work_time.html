@@ -1,0 +1,40 @@
+{%extends "navbar/base.html"%}
+<div class="text-center">
+  <h2>Daily Working Time Logs</h2>
+  <h3>Hi, {{ request.user.username }}!<br></h3>
+  <h4>Please submit your time logs here!</h4>
+</div>
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header text-center">
+          <h2>Submit Time Logs</h2>
+        </div>
+        <div class="card-body">
+          <form method="post" class="work-time-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                {{ field }}
+                {% if field.errors %}
+                  <div class="text-danger">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
