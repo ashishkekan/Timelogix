@@ -5,7 +5,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task
+from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task, WorkTimeCalculation
 
 
 class RegisterForm(UserCreationForm):
@@ -110,3 +110,13 @@ class ChangePasswordForm(forms.Form):
             )
 
         return self.cleaned_data
+
+
+class WorkTimeCalculationForm(forms.ModelForm):
+    class Meta:
+        model = WorkTimeCalculation
+        fields = ['current_avg', 'leave_days']
+        widgets = {
+            'current_avg': forms.NumberInput(attrs={'step': 0.01}),
+            'leave_days': forms.NumberInput(attrs={'min': 0}),
+        }

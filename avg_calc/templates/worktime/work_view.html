@@ -1,0 +1,59 @@
+{% extends "navbar/base.html" %}
+{% block content %}
+<style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .result-container {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .result-container h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .result-container p {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+
+    .result-container .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .result-container .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .recalculate-form {
+        margin-top: 30px;
+    }
+</style>
+
+<div class="result-container">
+    <h1>Calculation Result</h1>
+    <p><strong>Required Daily Hours:</strong> {{ required_daily_hours }}</p>
+    <p><strong>Remaining Required Hours:</strong> {{ remaining_required_hours }}</p>
+
+    <div class="recalculate-form">
+        <h2>Recalculate</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Calculate Again</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

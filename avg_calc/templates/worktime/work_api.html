@@ -1,0 +1,75 @@
+{% extends "navbar/base.html" %}
+{% block content %}
+<style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .custom-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .custom-form .form-group {
+        margin-bottom: 15px;
+    }
+    .custom-form .form-control {
+        border-radius: 5px;
+        border-color: #ced4da;
+        padding: 10px;
+        width: 100%;
+        max-width: 300px;
+    }
+    .custom-form .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+    .custom-form .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+    .result-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background-color: #fff;
+        margin-top: 20px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+</style>
+
+<h2>Calculate Working Hours</h2>
+
+<form method="post" class="custom-form">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.current_avg.label_tag }}
+        {{ form.current_avg }}
+    </div>
+    <div class="form-group">
+        {{ form.leave_days.label_tag }}
+        {{ form.leave_days }}
+    </div>
+    <button type="submit" class="btn btn-primary">Calculate</button>
+</form>
+
+{% if required_daily_hours is not None %}
+<div class="result-card">
+    <div class="card-body">
+        <h5 class="card-title">Calculation Result</h5>
+        <p class="card-text"><strong>Required Daily Hours:</strong> {{ required_daily_hours }}</p>
+        <p class="card-text"><strong>Remaining Required Hours:</strong> {{ remaining_required_hours }}</p>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

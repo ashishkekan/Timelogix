@@ -15,7 +15,7 @@ from .forms import (
     SalaryExpensesForm,
     DailyWorkSummaryForm,
     LeaveForm,
-    TaskForm, ChangePasswordForm,
+    TaskForm, ChangePasswordForm, WorkTimeCalculationForm,
 )
 from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task, RecentActivity
 from .templatetags.custom_filter import format_duration
@@ -394,3 +394,64 @@ def create_task(request):
 def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'worktime/task_list.html', {'tasks': tasks})
+
+
+@login_required()
+def calculate_working_hours(request):
+    if request.method == "POST":
+        form = WorkTimeCalculationForm(request.POST)
+        if form.is_valid():
+            current_avg = form.cleaned_data["current_avg"]
+            leave_days = form.cleaned_data["leave_days"]
+
+            today = datetime.today()
+            total_days_in_month = (
+                (datetime(today.year, today.month + 1, 1) - timedelta(days=1)).day
+                if today.month != 12
+                else 31
+            )
+            sundays = sum(
+                1
+                for day in range(1, total_days_in_month + 1)
+                if datetime(today.year, today.month, day).weekday() == 6
+            )
+            saturdays = [
+                datetime(today.year, today.month, day)
+                for day in range(1, total_days_in_month + 1)
+                if datetime(today.year, today.month, day).weekday() == 5
+            ]
+            first_third_saturdays = sum(
+                1 for i, saturday in enumerate(saturdays) if i == 0 or i == 2
+            )
+
+            total_leave_days = sundays + first_third_saturdays + leave_days
+            working_days = total_days_in_month - total_leave_days
+            completed_days = today.day - total_leave_days
+            remaining_days = working_days - completed_days
+            total_required_hours = working_days * 8.67
+            total_worked_hours = current_avg * completed_days
+            remaining_required_hours = total_required_hours - total_worked_hours
+
+            if remaining_days > 0:
+                required_daily_hours = remaining_required_hours / remaining_days
+            else:
+                required_daily_hours = 0
+
+            calculation = form.save(commit=False)
+            calculation.required_daily_hours = round(required_daily_hours, 2)
+            calculation.remaining_required_hours = round(remaining_required_hours, 2)
+            calculation.save()
+
+            return render(
+                request,
+                "worktime/work_api.html",
+                {
+                    "form": form,
+                    "required_daily_hours": round(required_daily_hours, 2),
+                    "remaining_required_hours": round(remaining_required_hours, 2),
+                },
+            )
+    else:
+        form = WorkTimeCalculationForm()
+
+    return render(request, "worktime/work_api.html", {"form": form})

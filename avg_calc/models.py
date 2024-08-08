@@ -75,3 +75,13 @@ class RecentActivity(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.description}"
+
+
+class WorkTimeCalculation(models.Model):
+    current_avg = models.FloatField()
+    leave_days = models.IntegerField()
+    required_daily_hours = models.FloatField(null=True, blank=True)
+    remaining_required_hours = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Avg: {self.current_avg}, Leaves: {self.leave_days}"
