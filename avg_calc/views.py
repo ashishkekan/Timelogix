@@ -218,16 +218,20 @@ def dashboard(request):
                 third_saturday = day
 
     weekdays = [day for day in weekdays if day not in {first_saturday, third_saturday}]
+    weekdays = [day for day in weekdays if day >= today]
 
     days_count = len(weekdays)
     average_work_seconds = total_work_seconds / days_count if days_count else 0
 
     additional_seconds_per_day = 0
+    need_time = 0
     if average_work_seconds < TARGET_WORK_TIME.total_seconds():
         total_target_seconds = TARGET_WORK_TIME.total_seconds() * days_count
         time_difference_seconds = total_target_seconds - total_work_seconds
         additional_seconds_per_day = time_difference_seconds / days_count
+        need_time = (additional_seconds_per_day / 60)
 
+    average_time_needed_to_work = need_time / 60
     average_time = total_work_seconds / len(entries) if entries else 0
 
     context = {
@@ -236,9 +240,10 @@ def dashboard(request):
         "total_work_time": format_duration(total_work_seconds),
         "average_work_time": format_duration(average_work_seconds),
         "additional_time_per_day": format_duration(additional_seconds_per_day),
-        "target_met": average_work_seconds >= TARGET_WORK_TIME.total_seconds(),
+        "target_met": total_work_seconds >= TARGET_WORK_TIME.total_seconds(),
         "leaves": leaves,
         "average_time": format_duration(average_time),
+        "time_needed": format_duration(average_time_needed_to_work),
     }
     return render(request, "worktime/dashboard.html", context)
 
