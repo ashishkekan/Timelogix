@@ -395,8 +395,10 @@ def task_list(request):
 
 @login_required()
 def recent_activity(request):
-    recent_activities = RecentActivity.objects.filter(user=request.user).order_by('-timestamp')[:10]
+    recent_activities = RecentActivity.objects.filter(user=request.user).order_by(
+        "-timestamp"
+    )[:10]
     context = {
-        'recent_activities': recent_activities,
+        "recent_activities": recent_activities,
     }
-    return render(request, 'worktime/recent_activity.html', context)
+    return render(request, "worktime/recent_activity.html", context)
