@@ -37,6 +37,7 @@ urlpatterns = [
     path('apply-leave/', views.add_leave, name='apply-leave'),
     path('create_task/', views.create_task, name='create_task'),
     path('task_list/', views.task_list, name='task_list'),
+    path('recent_activity/', views.recent_activity, name='recent_activity'),
     path('', include('django.contrib.auth.urls')),
 ]
 
