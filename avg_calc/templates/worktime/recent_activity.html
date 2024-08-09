@@ -1,0 +1,60 @@
+{% extends "navbar/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background-color: #fff;
+        margin-bottom: 16px;
+    }
+    .card-body {
+        padding: 16px;
+    }
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+    .table th, .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .table tbody + tbody {
+        border-top: 2px solid #dee2e6;
+    }
+</style>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Recent Activity</h5>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in recent_activities %}
+                    <tr>
+                        <td>{{ activity.description }}</td>
+                        <td class="text-muted">{{ activity.timestamp }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

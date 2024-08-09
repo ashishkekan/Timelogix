@@ -82,11 +82,8 @@ def profile_view(request):
             messages.success(request, 'Your details were successfully updated!')
             log_activity(request.user, "Updated profile details")
 
-    recent_activities = RecentActivity.objects.filter(user=request.user).order_by('-timestamp')[:10]
-
     context = {
         'user': request.user,
-        'recent_activities': recent_activities
     }
     return render(request, 'registration/profile.html', context)
 
@@ -394,3 +391,12 @@ def create_task(request):
 def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'worktime/task_list.html', {'tasks': tasks})
+
+
+@login_required()
+def recent_activity(request):
+    recent_activities = RecentActivity.objects.filter(user=request.user).order_by('-timestamp')[:10]
+    context = {
+        'recent_activities': recent_activities,
+    }
+    return render(request, 'worktime/recent_activity.html', context)

@@ -65,11 +65,8 @@
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5>Recent Activity</h5>
                     <ul class="list-group">
-                        {% for activity in recent_activities %}
-                            <li class="list-group-item">{{ activity.description }} <span class="text-muted">on {{ activity.timestamp }}</span></li>
-                        {% endfor %}
+                        <h5><a href="{% url 'recent_activity' %}">Recent Activity</a></h5>
                     </ul>
                 </div>
             </div>
