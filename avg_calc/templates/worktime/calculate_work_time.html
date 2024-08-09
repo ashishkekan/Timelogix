@@ -1,12 +1,22 @@
 {% extends "navbar/base.html" %}
 
 {% block content %}
-  <h1>Calculate Work Time</h1>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <div class="form-group">
-      <button type="submit" class="btn btn-primary">Calculate</button>
-    </div>
+<style>
+  .form-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+</style>
+  <form method="post" class="form-container">
+     <h1>Calculate Work Time</h1>
+     {% csrf_token %}
+     {{ form.as_p }}
+     <div class="form-group">
+         <button type="submit" class="btn btn-primary">Calculate</button>
+     </div>
   </form>
 {% endblock %}
