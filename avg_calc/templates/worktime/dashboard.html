@@ -3,36 +3,53 @@
 {% block content %}
 <style>
     body {
-      font-family: Arial, sans-serif;
+        font-family: Arial, sans-serif;
+        background-color: #f4f7fc;
+        margin: 0;
+        padding: 0;
     }
 
-    .table-container {
-      margin: 20px 0;
-    }
     .custom-form {
         display: flex;
         justify-content: flex-end;
         align-items: center;
         gap: 10px;
+        margin-bottom: 20px;
     }
+
     .custom-form .form-group {
-        margin-right: 10px;
+        margin: 0;
     }
-    .custom-form .form-control {
+
+    .custom-form .form-control,
+    .custom-form select {
         border-radius: 5px;
-        border-color: #ced4da;
-        padding: 10px;
+        border: 1px solid #ced4da;
+        padding: 6px 12px;
+        background-color: #f8f9fa;
+        transition: background-color 0.3s ease;
     }
+
+    .custom-form .form-control:focus,
+    .custom-form select:focus {
+        background-color: #fff;
+        border-color: #28a745;
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.2);
+    }
+
     .custom-form .btn-primary {
         background-color: #28a745;
         border-color: #28a745;
-        padding: 10px 20px;
+        padding: 6px 12px;
         border-radius: 5px;
+        font-size: 14px;
     }
+
     .custom-form .btn-primary:hover {
         background-color: #218838;
         border-color: #1e7e34;
     }
+
     .dashboard-area {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -50,45 +67,68 @@
     .card-body {
         padding: 16px;
     }
+
+    .table-container {
+        margin: 20px 0;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .form-group label {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
 </style>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
 <h2>My Dashboard</h2>
 <h3>Hi, {{ request.user.username }}</h3>
 
-<form method="get" class="form-inline custom-form mb-4">
+<form method="get" class="custom-form">
     <div class="form-group">
-        {{ month_form.month.label_tag }}
-        {{ month_form.month }}
+        <div class="dropdown">
+            {{ month_form.month }}
+        </div>
     </div>
     <button class="btn btn-primary" type="submit">Filter</button>
 </form>
 
-<div class="row mb-4" style="padding: 16px;">
-    <div class="dashboard-area">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Time In This Month</h5>
-                <p class="card-text">{{ total_work_time }}</p>
-            </div>
+<div class="dashboard-area mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Total Time In This Month</h5>
+            <p class="card-text">{{ total_work_time }}</p>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Average Time Per Day</h5>
-                <p class="card-text">{{ time_needed }}</p>
-            </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Average Time Per Day</h5>
+            <p class="card-text">{{ time_needed }}</p>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">No. of Days in the Month</h5>
-                <p class="card-text">{{ entries.count }}</p>
-            </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">No. of Days in the Month</h5>
+            <p class="card-text">{{ entries.count }}</p>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Average Time</h5>
-                <p class="card-text">{{ average_time }}</p>
-            </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Average Time</h5>
+            <p class="card-text">{{ average_time }}</p>
         </div>
     </div>
 </div>
@@ -133,8 +173,8 @@
                 <td>{{ entry.total_work_time }}</td>
             </tr>
             {% endfor %}
-
         </tbody>
     </table>
 </div>
+
 {% endblock %}
