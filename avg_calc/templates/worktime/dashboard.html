@@ -163,16 +163,22 @@
             </tr>
         </thead>
         <tbody>
-            {% for entry in entries %}
+            {% if entries %}
+                {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.date }}</td>
+                    <td>{{ entry.login_time|date:"h:i A" }}</td>
+                    <td>{{ entry.logout_time|date:"h:i A" }}</td>
+                    <td>{{ entry.breakout_time|date:"h:i A" }}</td>
+                    <td>{{ entry.breakin_time|date:"h:i A" }}</td>
+                    <td>{{ entry.total_work_time }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td>{{ entry.date }}</td>
-                <td>{{ entry.login_time|date:"h:i A" }}</td>
-                <td>{{ entry.logout_time|date:"h:i A" }}</td>
-                <td>{{ entry.breakout_time|date:"h:i A" }}</td>
-                <td>{{ entry.breakin_time|date:"h:i A" }}</td>
-                <td>{{ entry.total_work_time }}</td>
+                <td colspan="6" style="text-align: center; padding: 20px;">No entries found.</td>
             </tr>
-            {% endfor %}
+            {% endif %}
         </tbody>
     </table>
 </div>
