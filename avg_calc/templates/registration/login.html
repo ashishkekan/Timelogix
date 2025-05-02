@@ -1,5 +1,5 @@
 {% extends "navbar/base.html" %}
-
+{% load custom_filter %}
 <style>
   .container {
     max-width: 600px;
@@ -83,7 +83,7 @@
   <div class="row justify-content-center">
     <div class="col-md-6">
       <div class="card">
-        <div class="card-header text-center">
+        <div class="card-header text-center text-white" style="background-color: rgb(233, 182, 43);">
           <h2>Login</h2>
         </div>
         <div class="card-body">
@@ -93,7 +93,7 @@
             {% for field in form %}
               <div class="form-group">
                 <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-                {{ field}}
+                {{ field|add_class:"form-control" }}
                 {% if field.errors %}
                   <div class="text-danger">{{ field.errors }}</div>
                 {% endif %}

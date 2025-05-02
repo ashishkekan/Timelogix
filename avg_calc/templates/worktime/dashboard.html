@@ -143,37 +143,4 @@
     </div>
 </div>
 
-<div class="table-container">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Login Time</th>
-                <th>Logout Time</th>
-                <th>Breakout Time</th>
-                <th>Breakin Time</th>
-                <th>Total Work Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if entries %}
-                {% for entry in entries %}
-                <tr>
-                    <td>{{ entry.date }}</td>
-                    <td>{{ entry.login_time|date:"h:i A" }}</td>
-                    <td>{{ entry.logout_time|date:"h:i A" }}</td>
-                    <td>{{ entry.breakout_time|date:"h:i A" }}</td>
-                    <td>{{ entry.breakin_time|date:"h:i A" }}</td>
-                    <td>{{ entry.total_work_time }}</td>
-                </tr>
-                {% endfor %}
-            {% else %}
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 20px;">No entries found.</td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
-</div>
-
 {% endblock %}

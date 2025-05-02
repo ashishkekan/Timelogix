@@ -1,0 +1,122 @@
+{% extends "navbar/base.html" %}
+{% load custom_filter %}
+{% load static %}
+{% block content %}
+
+<style>
+    .custom-form {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .custom-form .form-group {
+        margin: 0;
+    }
+
+    .custom-form .form-control,
+    .custom-form select {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        padding: 6px 12px;
+        background-color: #f8f9fa;
+        transition: background-color 0.3s ease;
+    }
+
+    .custom-form .form-control:focus,
+    .custom-form select:focus {
+        background-color: #fff;
+        border-color: #28a745;
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.2);
+    }
+
+    .custom-form .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .custom-form .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .table-container {
+        margin: 20px 0;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .form-group label {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row align-items-center justify-content-between mb-4">
+      <div class="col-md-6">
+        <h2 class="fw-bold">My Dashboard</h2>
+        <h4 class="text-muted">Hi, {{ request.user.username }}</h4>
+      </div>
+  
+      <div class="col-md-6">
+        <div class="d-flex justify-content-end align-items-center gap-5">
+          <a href="{% url 'submit_work_time' %}" class="btn-create">+</a>
+          <form method="get" class="custom-form mb-0 d-flex align-items-center">
+            <div class="form-group mb-0">
+              {{ month_form.month|add_class:"form-select" }}
+            </div>
+            <button class="btn btn-primary ms-2" type="submit">Filter</button>
+          </form>
+        </div>
+      </div>
+    </div>  
+
+  <div class="table-container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Login Time</th>
+          <th>Logout Time</th>
+          <th>Breakout Time</th>
+          <th>Breakin Time</th>
+          <th>Total Work Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if entries %}
+          {% for entry in entries %}
+          <tr>
+            <td>{{ entry.date }}</td>
+            <td>{{ entry.login_time|date:"h:i A" }}</td>
+            <td>{{ entry.logout_time|date:"h:i A" }}</td>
+            <td>{{ entry.breakout_time|date:"h:i A" }}</td>
+            <td>{{ entry.breakin_time|date:"h:i A" }}</td>
+            <td>{{ entry.total_work_time }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center py-4">No entries found.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
