@@ -181,8 +181,11 @@ def dashboard(request):
         month=selected_month % 12 + 1, day=1
     ) - timedelta(days=1)
 
+    # Get leaves
     leaves = Leave.objects.filter(
-        user=request.user, start_date__lte=end_of_month, end_date__gte=start_of_month
+        user=request.user,
+        start_date__lte=end_of_month,
+        end_date__gte=start_of_month,
     )
 
     leave_days = set()
@@ -194,6 +197,29 @@ def dashboard(request):
             ]
         )
 
+    # Generate all days in month
+    days_count = (end_of_month - start_of_month).days + 1
+    all_days = [start_of_month + timedelta(days=i) for i in range(days_count)]
+
+    # Identify excluded Saturdays
+    saturdays = [day for day in all_days if day.weekday() == 5]  # Saturday
+    excluded_saturdays = set()
+    if len(saturdays) >= 1:
+        excluded_saturdays.add(saturdays[0])  # 1st
+    if len(saturdays) >= 3:
+        excluded_saturdays.add(saturdays[2])  # 3rd
+
+    # Final working days
+    final_days = [
+        day
+        for day in all_days
+        if not (
+            day.weekday() == 6 or day in excluded_saturdays
+        )  # Exclude Sundays and selected Saturdays
+        and day not in leave_days
+        and day >= today
+    ]
+
     entries = WorkTimeEntry.objects.filter(
         user=request.user, date__range=[start_of_month, end_of_month]
     ).exclude(date__in=leave_days)
@@ -204,32 +230,20 @@ def dashboard(request):
         if entry.total_work_time
     )
 
-    days_count = (end_of_month - start_of_month).days + 1
-    all_days = [start_of_month + timedelta(days=i) for i in range(days_count)]
-
-    saturdays = [day for day in all_days if day.weekday() == 5]
-
-    excluded_saturdays = set()
-    if len(saturdays) >= 1:
-        excluded_saturdays.add(saturdays[0])  # 1st Saturday
-    if len(saturdays) >= 3:
-        excluded_saturdays.add(saturdays[2])  # 3rd Saturday
-
-    final_days = [
-        day for day in all_days if not (day.weekday() == 6 or day in excluded_saturdays)
-    ]
-
-    final_days = [day for day in final_days if day not in leave_days]
-
-    final_days = [day for day in final_days if day >= today]
-
-    days_count = len(final_days)
-    average_work_seconds = total_work_seconds / days_count if days_count else 0
+    working_days_count = len(final_days)
+    average_work_seconds = (
+        total_work_seconds / working_days_count if working_days_count else 0
+    )
 
     additional_seconds_per_day = 0
     need_time = 0
-    if average_work_seconds < TARGET_WORK_TIME.total_seconds():
-        total_target_seconds = TARGET_WORK_TIME.total_seconds() * days_count
+    average_time_needed_to_work = timedelta(seconds=0)
+
+    if (
+        working_days_count > 0
+        and average_work_seconds < TARGET_WORK_TIME.total_seconds()
+    ):
+        total_target_seconds = TARGET_WORK_TIME.total_seconds() * working_days_count
         time_difference_seconds = total_target_seconds - total_work_seconds
         additional_seconds_per_day = time_difference_seconds / days_count
         need_time = additional_seconds_per_day / 60
@@ -242,11 +256,16 @@ def dashboard(request):
         "entries": entries,
         "total_work_time": format_duration(total_work_seconds),
         "average_work_time": format_duration(average_work_seconds),
-        # "additional_time_per_day": format_duration(additional_seconds_per_day),
-        "target_met": total_work_seconds >= TARGET_WORK_TIME.total_seconds(),
+        "target_met": (
+            total_work_seconds >= TARGET_WORK_TIME.total_seconds() * working_days_count
+            if working_days_count
+            else False
+        ),
         "leaves": leaves,
         "average_time": format_duration(average_time),
-        "time_needed": format_duration(average_time_needed_to_work),
+        "time_needed": (
+            format_duration(need_time) if need_time else "0 hours, 0 minutes"
+        ),
     }
     return render(request, "worktime/dashboard.html", context)
 
