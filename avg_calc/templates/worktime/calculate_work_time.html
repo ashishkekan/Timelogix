@@ -1,22 +1,47 @@
 {% extends "navbar/base.html" %}
 
+{% load custom_filter %}
+
 {% block content %}
 <style>
   .form-container {
     max-width: 600px;
     margin: auto;
-    padding: 20px;
+    padding: 30px;
     border: 1px solid #ced4da;
-    border-radius: 5px;
+    border-radius: 10px;
     background-color: #f9f9f9;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  }
+  .form-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
+  .form-group {
+    margin-bottom: 20px;
   }
 </style>
-  <form method="post" class="form-container">
-     <h1>Calculate Work Time</h1>
-     {% csrf_token %}
-     {{ form.as_p }}
-     <div class="form-group">
-         <button type="submit" class="btn btn-primary">Calculate</button>
-     </div>
+
+<div class="form-container">
+  <form method="post" class="work-time-form">
+    <h1>Calculate Work Time</h1>
+    {% csrf_token %}
+
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field|add_class:"form-control" }}
+        {% if field.errors %}
+          <div class="text-danger">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <div class="form-actions">
+      <a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
+      <button type="submit" class="btn btn-primary">Calculate</button>
+    </div>
   </form>
+</div>
 {% endblock %}

@@ -1,9 +1,9 @@
 {% extends "navbar/base.html" %}
+{% load custom_filter %}
 
 {% block content %}
 <div class="text-center">
   <h2>Add Task</h2>
-  <h3>Hi, {{ request.user.username }}!<br></h3>
   <h4>Please add your task details here!</h4>
 </div>
 
@@ -14,6 +14,9 @@
         <div class="card-header text-center">
           <h2>Add Task</h2>
         </div>
+        <!-- <div style="text-align: right;">
+          <a href="{% url 'task_list' %}" class="btn btn-primary mt-3">See list</a>
+        </div> -->
         <div class="card-body">
           <form method="post">
             {% csrf_token %}
@@ -21,20 +24,18 @@
             {% for field in form %}
               <div class="form-group">
                 <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-                {{ field }}
+                {{ field|add_class:"form-control" }}
                 {% if field.errors %}
                   <div class="text-danger">{{ field.errors }}</div>
                 {% endif %}
               </div>
             {% endfor %}
 
-            <div class="text-center">
-              <button type="submit" class="btn btn-primary mt-3">Save</button>
+            <div class="form-actions">
+              <a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
+              <button type="submit" class="btn btn-primary">Save</button>
             </div>
           </form>
-          <div style="text-align: right;">
-              <a href="{% url 'task_list' %}" class="btn btn-primary mt-3">See list</a>
-          </div>
         </div>
       </div>
     </div>
