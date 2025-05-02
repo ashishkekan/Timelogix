@@ -1,17 +1,42 @@
 {% extends "navbar/base.html" %}
+{% load custom_filter %}
 
 {% block title %}Update Salary Expenses{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-5">
+  <div class="text-center mb-4">
     <h2>Update Salary Expenses</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <div class="form-actions">
-            <a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
-            <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg rounded-4">
+        <div class="card-header text-center text-white" style="background-color: rgb(233, 182, 43);">
+          <h4 class="mb-0">Update Salary Expenses</h4>
         </div>
-    </form>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field|add_class:"form-control" }}
+                {% if field.errors %}
+                  <div class="text-danger small mt-1">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            <div class="form-actions d-flex justify-content-between">
+              <a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
