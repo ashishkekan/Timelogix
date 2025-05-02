@@ -37,26 +37,5 @@
             </tr>
         </tbody>
     </table>
-    <h4>Detailed Work Entries</h4>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Login Time</th>
-                <th>Logout Time</th>
-                <th>Total Work Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for entry in entries %}
-            <tr>
-                <td>{{ entry.date }}</td>
-                <td>{{ entry.login_time }}</td>
-                <td>{{ entry.logout_time }}</td>
-                <td>{{ entry.total_work_time }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 {% endblock %}
