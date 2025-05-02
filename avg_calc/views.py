@@ -248,7 +248,6 @@ def dashboard(request):
         additional_seconds_per_day = time_difference_seconds / days_count
         need_time = additional_seconds_per_day / 60
 
-    average_time_needed_to_work = timedelta(need_time) / TARGET_WORK_TIME
     average_time = total_work_seconds / len(entries) if entries else 0
 
     context = {
