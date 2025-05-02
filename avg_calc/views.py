@@ -205,30 +205,25 @@ def dashboard(request):
     )
 
     days_count = (end_of_month - start_of_month).days + 1
-    weekdays = [
-        start_of_month + timedelta(days=i)
-        for i in range(days_count)
-        if (start_of_month + timedelta(days=i)).weekday() not in {5, 6}
+    all_days = [start_of_month + timedelta(days=i) for i in range(days_count)]
+
+    saturdays = [day for day in all_days if day.weekday() == 5]
+
+    excluded_saturdays = set()
+    if len(saturdays) >= 1:
+        excluded_saturdays.add(saturdays[0])  # 1st Saturday
+    if len(saturdays) >= 3:
+        excluded_saturdays.add(saturdays[2])  # 3rd Saturday
+
+    final_days = [
+        day for day in all_days if not (day.weekday() == 6 or day in excluded_saturdays)
     ]
 
-    weekdays = [day for day in weekdays if day not in leave_days]
+    final_days = [day for day in final_days if day not in leave_days]
 
-    first_saturday = None
-    third_saturday = None
-    saturday_count = 0
+    final_days = [day for day in final_days if day >= today]
 
-    for day in weekdays:
-        if day.weekday() == 5:
-            saturday_count += 1
-            if saturday_count == 1:
-                first_saturday = day
-            elif saturday_count == 3:
-                third_saturday = day
-
-    weekdays = [day for day in weekdays if day not in {first_saturday, third_saturday}]
-    weekdays = [day for day in weekdays if day >= today]
-
-    days_count = len(weekdays)
+    days_count = len(final_days)
     average_work_seconds = total_work_seconds / days_count if days_count else 0
 
     additional_seconds_per_day = 0
@@ -239,7 +234,7 @@ def dashboard(request):
         additional_seconds_per_day = time_difference_seconds / days_count
         need_time = additional_seconds_per_day / 60
 
-    average_time_needed_to_work = need_time / 60
+    average_time_needed_to_work = timedelta(need_time) / TARGET_WORK_TIME
     average_time = total_work_seconds / len(entries) if entries else 0
 
     context = {
@@ -247,7 +242,7 @@ def dashboard(request):
         "entries": entries,
         "total_work_time": format_duration(total_work_seconds),
         "average_work_time": format_duration(average_work_seconds),
-        "additional_time_per_day": format_duration(additional_seconds_per_day),
+        # "additional_time_per_day": format_duration(additional_seconds_per_day),
         "target_met": total_work_seconds >= TARGET_WORK_TIME.total_seconds(),
         "leaves": leaves,
         "average_time": format_duration(average_time),
