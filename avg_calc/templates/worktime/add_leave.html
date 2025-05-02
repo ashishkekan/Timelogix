@@ -1,65 +1,51 @@
 {% extends "navbar/base.html" %}
+{% load custom_filter %}
+
 {% block content %}
 <style>
-    body {
-        font-family: Arial, sans-serif;
-    }
-    .form-container {
-        max-width: 600px;
-        margin: auto;
-        padding: 20px;
-        border: 1px solid #ced4da;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-    .form-container h2, .form-container h3 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .form-control {
-        border-radius: 5px;
-        border-color: #ced4da;
-        padding: 10px;
-    }
-    .btn-primary {
-        background-color: #28a745;
-        border-color: #28a745;
-        padding: 10px 20px;
-        border-radius: 5px;
-        display: block;
-        width: 100%;
-    }
-    .btn-primary:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-    }
+  .card-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+  }
+
+  .card-container h2,
+  .card-container h3 {
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
 </style>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
-<div class="form-container">
-    <h2>Leave Entry</h2>
-    <h3>Hi, {{ request.user.username }}</h3>
+<div class="card-container">
+  <h2>Leave Entry</h2>
+  <form method="post" class="custom-form">
+    {% csrf_token %}
 
-    <form method="post" class="custom-form">
-        {% csrf_token %}
-        <div class="form-group">
-            {{ form.start_date.label_tag }}
-            {{ form.start_date }}
-        </div>
-        <div class="form-group">
-            {{ form.end_date.label_tag }}
-            {{ form.end_date }}
-        </div>
-        <div class="form-group">
-            {{ form.reason.label_tag }}
-            {{ form.reason }}
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Submit Leave</button>
-        </div>
-    </form>
+    <div class="form-group">
+      {{ form.start_date.label_tag }}
+      {{ form.start_date|add_class:"form-control" }}
+    </div>
+
+    <div class="form-group">
+      {{ form.end_date.label_tag }}
+      {{ form.end_date|add_class:"form-control" }}
+    </div>
+
+    <div class="form-group">
+      {{ form.reason.label_tag }}
+      {{ form.reason|add_class:"form-control" }}
+    </div>
+
+    <div class="form-actions">
+       <a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
+       <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
 </div>
 {% endblock %}

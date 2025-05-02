@@ -1,23 +1,34 @@
-import pandas as pd
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 
+import pandas as pd
 from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login, logout as auth_logout, update_session_auth_hash
+from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+
 from .forms import (
-    WorkTimeEntryForm,
-    UploadExcelForm,
+    ChangePasswordForm,
+    DailyWorkSummaryForm,
+    LeaveForm,
     MonthChoiceForm,
     RegisterForm,
     SalaryExpensesForm,
-    DailyWorkSummaryForm,
-    LeaveForm,
-    TaskForm, ChangePasswordForm,
+    TaskForm,
+    UploadExcelForm,
+    WorkTimeEntryForm,
 )
-from .models import WorkTimeEntry, SalaryExpenses, DailyWorkSummary, Leave, Task, RecentActivity
+from .models import (
+    DailyWorkSummary,
+    Leave,
+    RecentActivity,
+    SalaryExpenses,
+    Task,
+    WorkTimeEntry,
+)
 from .templatetags.custom_filter import format_duration
 
 TARGET_WORK_TIME = timedelta(hours=8, minutes=40)
@@ -59,33 +70,33 @@ def logout(request):
 
 @login_required
 def profile_view(request):
-    if request.method == 'POST':
-        if 'old_password' in request.POST:
+    if request.method == "POST":
+        if "old_password" in request.POST:
             change_password_form = ChangePasswordForm(request.POST)
             if change_password_form.is_valid():
-                old_password = change_password_form.cleaned_data.get('old_password')
-                new_password = change_password_form.cleaned_data.get('new_password')
+                old_password = change_password_form.cleaned_data.get("old_password")
+                new_password = change_password_form.cleaned_data.get("new_password")
                 if request.user.check_password(old_password):
                     request.user.set_password(new_password)
                     request.user.save()
                     log_activity(request.user, "Change Password")
                     update_session_auth_hash(request, request.user)
-                    messages.success(request, 'Your password was successfully updated!')
+                    messages.success(request, "Your password was successfully updated!")
                     log_activity(request.user, "Changed password")
                 else:
-                    messages.error(request, 'Current password is incorrect')
+                    messages.error(request, "Current password is incorrect")
         else:
-            request.user.first_name = request.POST.get('first_name', '')
-            request.user.last_name = request.POST.get('last_name', '')
-            request.user.email = request.POST.get('email', '')
+            request.user.first_name = request.POST.get("first_name", "")
+            request.user.last_name = request.POST.get("last_name", "")
+            request.user.email = request.POST.get("email", "")
             request.user.save()
-            messages.success(request, 'Your details were successfully updated!')
+            messages.success(request, "Your details were successfully updated!")
             log_activity(request.user, "Updated profile details")
 
     context = {
-        'user': request.user,
+        "user": request.user,
     }
-    return render(request, 'registration/profile.html', context)
+    return render(request, "registration/profile.html", context)
 
 
 @login_required
@@ -226,7 +237,7 @@ def dashboard(request):
         total_target_seconds = TARGET_WORK_TIME.total_seconds() * days_count
         time_difference_seconds = total_target_seconds - total_work_seconds
         additional_seconds_per_day = time_difference_seconds / days_count
-        need_time = (additional_seconds_per_day / 60)
+        need_time = additional_seconds_per_day / 60
 
     average_time_needed_to_work = need_time / 60
     average_time = total_work_seconds / len(entries) if entries else 0
@@ -248,7 +259,10 @@ def dashboard(request):
 @login_required
 def total_expenses(request):
     user = request.user
-    profile = SalaryExpenses.objects.get(user=user)
+    profile, _ = SalaryExpenses.objects.get_or_create(
+        user=user, defaults={"salary": 0}
+    )
+
     month_form = MonthChoiceForm(request.GET or None)
 
     today = datetime.now().date()
@@ -267,7 +281,6 @@ def total_expenses(request):
 
     pf = 200
     payment = profile.salary - pf
-
     balance = payment - total_lunch_expenses
 
     context = {
@@ -290,20 +303,20 @@ def update_salary_expenses(request):
     except SalaryExpenses.DoesNotExist:
         profile = None
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SalaryExpensesForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
             log_activity(request.user, "Update salary")
-            return redirect('salary_expenses_success')
+            return redirect("salary_expenses_success")
     else:
         form = SalaryExpensesForm(instance=profile)
 
-    return render(request, 'worktime/update_salary_expenses.html', {'form': form})
+    return render(request, "worktime/update_salary_expenses.html", {"form": form})
 
 
 def salary_expenses_success(request):
-    return render(request, 'worktime/success.html')
+    return render(request, "worktime/success.html")
 
 
 @login_required
@@ -350,11 +363,7 @@ def calculate_work_time(request):
 @login_required
 def work_summary_detail(request, pk):
     summary = DailyWorkSummary.objects.get(pk=pk)
-    return render(
-        request,
-        "worktime/work_summary_detail.html",
-        {"summary": summary}
-    )
+    return render(request, "worktime/work_summary_detail.html", {"summary": summary})
 
 
 @login_required
@@ -374,23 +383,23 @@ def add_leave(request):
 
 @login_required()
 def create_task(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = TaskForm(request.POST)
         if form.is_valid():
             task = form.save(commit=False)
             task.user = request.user
             task.save()
             log_activity(request.user, "Create Task")
-            return redirect('task_list')
+            return redirect("task_list")
     else:
         form = TaskForm()
-    return render(request, 'worktime/task_form.html', {'form': form})
+    return render(request, "worktime/task_form.html", {"form": form})
 
 
 @login_required()
 def task_list(request):
     tasks = Task.objects.filter(user=request.user)
-    return render(request, 'worktime/task_list.html', {'tasks': tasks})
+    return render(request, "worktime/task_list.html", {"tasks": tasks})
 
 
 @login_required()

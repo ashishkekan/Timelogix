@@ -1,33 +1,36 @@
-{%extends "navbar/base.html"%}
-<div class="text-center">
-  <h2>Daily Working Time Logs</h2>
-  <h3>Hi, {{ request.user.username }}!<br></h3>
-  <h4>Please submit your time logs here!</h4>
-</div>
+{% extends "navbar/base.html" %}
+{% load custom_filter %}
+
 {% block content %}
 <div class="container mt-5">
+  <div class="text-center mb-4">
+    <h2>Daily Working Time Logs</h2>
+    <h4>Please submit your time logs here!</h4>
+  </div>
+
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header text-center">
-          <h2>Submit Time Logs</h2>
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg rounded-4">
+        <div class="card-header text-center text-white" style="background-color: rgb(233, 182, 43);">
+          <h4 class="mb-0">Submit Time Logs</h4>
         </div>
         <div class="card-body">
           <form method="post" class="work-time-form">
             {% csrf_token %}
 
             {% for field in form %}
-              <div class="form-group">
-                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-                {{ field }}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field|add_class:"form-control" }}
                 {% if field.errors %}
-                  <div class="text-danger">{{ field.errors }}</div>
+                  <div class="text-danger small mt-1">{{ field.errors }}</div>
                 {% endif %}
               </div>
             {% endfor %}
 
-            <div class="text-center">
-              <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            <div class="form-actions">
+              <a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
+              <button type="submit" class="btn btn-primary">Submit</button>
             </div>
           </form>
         </div>
@@ -36,5 +39,3 @@
   </div>
 </div>
 {% endblock %}
-
-
