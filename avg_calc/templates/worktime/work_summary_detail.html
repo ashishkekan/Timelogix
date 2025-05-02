@@ -1,8 +1,60 @@
 {% extends "navbar/base.html" %}
-
+{% load static %}
 {% block content %}
-  <h1>Work Summary for {{ summary.date }}</h1>
-  <p>User: {{ summary.user.username }}</p>
-  <p>Average Work Time: {{ summary.average_work_time }}</p>
-  <p>Additional Time Needed: {{ summary.additional_time_needed }}</p>
+
+<style>
+    .dashboard-area {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background-color: #fff;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 16px;
+    }
+</style>
+
+<h2>Work Summary</h2>
+<h3>Hi, {{ request.user.username }}</h3>
+<div class="dashboard-area">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Date</h5>
+            <p class="card-text">{{ summary.date }}</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Average Work Time</h5>
+            <p class="card-text">{{ summary.average_work_time }}</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Additional Time Needed</h5>
+            <p class="card-text">{{ summary.additional_time_needed }}</p>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
