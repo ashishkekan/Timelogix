@@ -1,47 +1,44 @@
 {% extends "navbar/base.html" %}
-
 {% load custom_filter %}
 
 {% block content %}
-<style>
-  .form-container {
-    max-width: 600px;
-    margin: auto;
-    padding: 30px;
-    border: 1px solid #ced4da;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-  }
-  .form-container h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 28px;
-  }
-  .form-group {
-    margin-bottom: 20px;
-  }
-</style>
+<div class="container mt-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Calculate Work Time</h2>
+    <h5 class="text-muted">Please enter your details to calculate the work time!</h5>
+  </div>
 
-<div class="form-container">
-  <form method="post" class="work-time-form">
-    <h1>Calculate Work Time</h1>
-    {% csrf_token %}
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow rounded-4">
+        <div class="card-header text-center text-white" style="background-color: rgb(233, 182, 43);">
+          <h5 class="mb-0">Work Time Calculation</h5>
+        </div>
 
-    {% for field in form %}
-      <div class="form-group">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field|add_class:"form-control" }}
-        {% if field.errors %}
-          <div class="text-danger">{{ field.errors }}</div>
-        {% endif %}
+        <div class="card-body">
+          <form method="post" class="work-time-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field|add_class:"form-control" }}
+                {% if field.errors %}
+                  <div class="text-danger small mt-1">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            <div class="form-actions">
+              <a href="{% url 'dashboard' %}" class="btn btn-secondary me-2 mt-2">
+                ← Back
+              </a>
+              <button type="submit" class="btn btn-success mt-2 px-4">Calculate</button>
+            </div>
+          </form>
+        </div>
       </div>
-    {% endfor %}
-
-    <div class="form-actions">
-      <a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
-      <button type="submit" class="btn btn-primary">Calculate</button>
     </div>
-  </form>
+  </div>
 </div>
 {% endblock %}
