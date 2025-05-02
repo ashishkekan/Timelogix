@@ -259,9 +259,7 @@ def dashboard(request):
 @login_required
 def total_expenses(request):
     user = request.user
-    profile, _ = SalaryExpenses.objects.get_or_create(
-        user=user, defaults={"salary": 0}
-    )
+    profile, _ = SalaryExpenses.objects.get_or_create(user=user, defaults={"salary": 0})
 
     month_form = MonthChoiceForm(request.GET or None)
 

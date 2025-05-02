@@ -22,7 +22,9 @@ class WorkTimeEntry(models.Model):
         breakout_datetime = datetime.combine(self.date, self.breakout_time)
         breakin_datetime = datetime.combine(self.date, self.breakin_time)
 
-        work_duration = (logout_datetime - login_datetime) - (breakin_datetime - breakout_datetime)
+        work_duration = (logout_datetime - login_datetime) - (
+            breakin_datetime - breakout_datetime
+        )
         self.total_work_time = work_duration
 
         super().save(*args, **kwargs)
