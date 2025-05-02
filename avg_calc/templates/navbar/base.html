@@ -69,6 +69,20 @@
           justify-content: space-between;
           margin-top: 25px;
         }
+        .btn-create {
+          background-color: #28a745;
+          color: white;
+          padding: 8px 14px;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: bold;
+          font-size: 14px;
+          transition: background-color 0.3s ease;
+        }
+
+        .btn-create:hover {
+          background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -84,7 +98,7 @@
                         <a class="nav-link" href="{% url 'dashboard' %}"><b>Dashboard</b></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'submit_work_time' %}"><b>Worklog</b></a>
+                        <a class="nav-link" href="{% url 'timelogs' %}"><b>Worklog</b></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'upload_time_logs' %}"><b>Upload Worklog</b></a>
@@ -99,7 +113,7 @@
                         <a class="nav-link" href="{% url 'calculate_work_time' %}"><b>API</b></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'apply-leave' %}"><b>Apply Leave</b></a>
+                        <a class="nav-link" href="{% url 'leaves' %}"><b>Leaves</b></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'create_task' %}"><b>Task</b></a>

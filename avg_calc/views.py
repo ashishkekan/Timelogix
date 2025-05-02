@@ -409,3 +409,45 @@ def recent_activity(request):
         "recent_activities": recent_activities,
     }
     return render(request, "worktime/recent_activity.html", context)
+
+
+@login_required
+def work_view(request):
+    today = datetime.now().date()
+    month_form = MonthChoiceForm(request.GET or None)
+
+    selected_month = int(month_form.data.get("month", today.month))
+    selected_year = today.year
+
+    start_of_month = datetime(selected_year, selected_month, 1).date()
+    end_of_month = start_of_month.replace(
+        month=selected_month % 12 + 1, day=1
+    ) - timedelta(days=1)
+
+    leaves = Leave.objects.filter(
+        user=request.user, start_date__lte=end_of_month, end_date__gte=start_of_month
+    )
+
+    leave_days = set()
+    for leave in leaves:
+        leave_days.update(
+            [
+                leave.start_date + timedelta(days=i)
+                for i in range((leave.end_date - leave.start_date).days + 1)
+            ]
+        )
+    entries = WorkTimeEntry.objects.filter(
+        user=request.user, date__range=[start_of_month, end_of_month]
+    ).exclude(date__in=leave_days)
+
+    return render(
+        request,
+        "worktime/work-list.html",
+        {"entries": entries, "month_form": month_form},
+    )
+
+
+@login_required
+def leaves(request):
+    leaves = Leave.objects.filter(user=request.user)
+    return render(request, "worktime/leaves.html", {"leaves": leaves})
