@@ -260,7 +260,7 @@ def dashboard(request):
         "total_work_time": format_duration(total_work_seconds),
         "average_work_time": format_duration(average_work_seconds),
         "target_met": (
-            total_work_seconds >= TARGET_WORK_TIME.total_seconds() * working_days_count
+            average_time >= TARGET_WORK_TIME.total_seconds()
             if working_days_count
             else False
         ),
