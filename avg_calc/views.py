@@ -237,7 +237,7 @@ def dashboard(request):
 
     additional_seconds_per_day = 0
     need_time = 0
-    average_time_needed_to_work = timedelta(seconds=0)
+    overtime = 0
 
     if (
         working_days_count > 0
@@ -247,6 +247,9 @@ def dashboard(request):
         time_difference_seconds = total_target_seconds - total_work_seconds
         additional_seconds_per_day = time_difference_seconds / days_count
         need_time = additional_seconds_per_day / 60
+        additional_overtime = total_work_seconds - total_target_seconds
+        overtime_by_days = additional_overtime / days_count
+        overtime = overtime_by_days / 60
 
     average_time = total_work_seconds / len(entries) if entries else 0
 
@@ -265,6 +268,7 @@ def dashboard(request):
         "time_needed": (
             format_duration(need_time) if need_time else "0 hours, 0 minutes"
         ),
+        "overtime": format_duration(overtime) if overtime else "0 hours, 0 minutes",
     }
     return render(request, "worktime/dashboard.html", context)
 
