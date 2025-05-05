@@ -1,60 +1,122 @@
 {% extends "navbar/base.html" %}
 {% load static %}
 {% block content %}
+
 <style>
     body {
-      font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
     .card {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background-color: #fff;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        margin-bottom: 24px;
+        padding: 24px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
         margin-bottom: 16px;
+        color: #343a40;
     }
-    .card-body {
-        padding: 16px;
-    }
+
     .table {
         width: 100%;
-        margin-bottom: 1rem;
-        color: #212529;
+        border-collapse: collapse;
     }
+
+    .table thead {
+        background-color: #e9ecef;
+    }
+
     .table th, .table td {
-        padding: 0.75rem;
-        vertical-align: top;
-        border-top: 1px solid #dee2e6;
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
     }
-    .table thead th {
-        vertical-align: bottom;
-        border-bottom: 2px solid #dee2e6;
+
+    .table tbody tr:hover {
+        background-color: #f1f3f5;
     }
-    .table tbody + tbody {
-        border-top: 2px solid #dee2e6;
+
+    .text-muted {
+        color: #6c757d;
+    }
+
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .step-links a,
+    .step-links span.current {
+        margin: 0 6px;
+        padding: 8px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #007bff;
+        background-color: #f8f9fa;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .step-links a:hover {
+        background-color: #e2e6ea;
+    }
+
+    .step-links span.current {
+        font-weight: bold;
+        background-color: #dee2e6;
+        color: #212529;
+        pointer-events: none;
     }
 </style>
 
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">Recent Activity</h5>
-        <table class="table table-striped">
-            <thead>
+<div class="card">
+    <h5 class="card-title">Recent Activity</h5>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for activity in page_obj %}
                 <tr>
-                    <th>Description</th>
-                    <th>Timestamp</th>
+                    <td>{{ activity.description }}</td>
+                    <td class="text-muted">{{ activity.timestamp }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for activity in recent_activities %}
-                    <tr>
-                        <td>{{ activity.description }}</td>
-                        <td class="text-muted">{{ activity.timestamp }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% empty %}
+                <tr>
+                    <td colspan="2" class="text-muted">No activity found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; First</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
     </div>
+    {% endif %}
 </div>
 
 {% endblock %}
