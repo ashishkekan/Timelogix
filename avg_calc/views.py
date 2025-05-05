@@ -7,6 +7,7 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
@@ -419,11 +420,14 @@ def task_list(request):
 
 @login_required()
 def recent_activity(request):
-    recent_activities = RecentActivity.objects.filter(user=request.user).order_by(
-        "-timestamp"
-    )[:10]
+    activities = RecentActivity.objects.filter(user=request.user).order_by("-timestamp")
+
+    paginator = Paginator(activities, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        "recent_activities": recent_activities,
+        "page_obj": page_obj,
     }
     return render(request, "worktime/recent_activity.html", context)
 
