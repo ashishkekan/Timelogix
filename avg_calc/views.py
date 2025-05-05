@@ -60,7 +60,7 @@ def login(request):
             return redirect("dashboard")
     else:
         form = AuthenticationForm()
-    return render(request, "login.html", {"form": form})
+    return render(request, "registration/login.html", {"form": form})
 
 
 def logout(request):
