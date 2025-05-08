@@ -93,6 +93,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+              {% if user.is_authenticated %}
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'dashboard' %}"><b>Dashboard</b></a>
@@ -119,6 +120,7 @@
                         <a class="nav-link" href="{% url 'create_task' %}"><b>Task</b></a>
                     </li>
                 </ul>
+              {% endif %}
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
@@ -136,9 +138,6 @@
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">Register</a>
                         </li>
                     {% endif %}
                 </ul>

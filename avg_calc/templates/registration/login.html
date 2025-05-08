@@ -72,6 +72,17 @@
   .text-danger {
     color: #ff4d4d;
   }
+  .sign-up {
+    font-size: 0.875rem;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 0;
+  }
+
+  .sign-up a {
+    color: #0090e7; 
+  }
+
 </style>
 
 <div class="text-center">
@@ -103,6 +114,7 @@
             <div class="text-center">
               <button type="submit" class="btn btn-primary">Login</button>
             </div>
+            <p class="text-center">Don't have an Account?<a href="{% url 'register' %}"> Register</a></p>
           </form>
         </div>
       </div>
