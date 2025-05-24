@@ -457,14 +457,26 @@ def work_view(request):
                 for i in range((leave.end_date - leave.start_date).days + 1)
             ]
         )
-    entries = WorkTimeEntry.objects.filter(
-        user=request.user, date__range=[start_of_month, end_of_month]
-    ).exclude(date__in=leave_days)
+
+    all_entries = (
+        WorkTimeEntry.objects.filter(
+            user=request.user, date__range=[start_of_month, end_of_month]
+        )
+        .exclude(date__in=leave_days)
+        .order_by("date")
+    )
+
+    paginator = Paginator(all_entries, 10)
+    page_number = request.GET.get("page")
+    entries = paginator.get_page(page_number)
 
     return render(
         request,
         "worktime/work-list.html",
-        {"entries": entries, "month_form": month_form},
+        {
+            "entries": entries,
+            "month_form": month_form,
+        },
     )
 
 
