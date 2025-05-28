@@ -85,6 +85,14 @@
         font-weight: bold;
     }
 
+    .card-link-wrapper .card-title {
+        color: black;
+        transition: color 0.3s ease;
+    }
+
+    .card-link-wrapper:hover .card-title {
+        color: #28a745;
+    }
 </style>
 
 <h2>My Dashboard</h2>
@@ -124,6 +132,34 @@
             <p class="card-text">{{ average_time }}</p>
         </div>
     </div>
+    <a href="{% url 'calculate_work_time' %}" class="d-block text-decoration-none card-link-wrapper">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-0">Calculate Work Time</h5>
+            </div>
+        </div>
+    </a>
+    <a href="{% url 'update_salary_expenses' %}" class="d-block text-decoration-none card-link-wrapper">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-0">Salary Expenses</h5>
+            </div>
+        </div>
+    </a>
+    <a href="{% url 'leaves' %}" class="d-block text-decoration-none card-link-wrapper">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-0">Leaves</h5>
+            </div>
+        </div>
+    </a>
+    <a href="{% url 'create_task' %}" class="d-block text-decoration-none card-link-wrapper">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-0">Tasks</h5>
+            </div>
+        </div>
+    </a>
 </div>
 
 <div class="row mb-4">
