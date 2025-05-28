@@ -45,6 +45,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             log_activity(user, "Registered an account")
+            messages.success(request, "User registered successfully!")
             return redirect("login")
     else:
         form = RegisterForm()
@@ -58,6 +59,7 @@ def login(request):
             user = form.get_user()
             auth_login(request, user)
             log_activity(request.user, "Logged in")
+            messages.success(request, "User Login successfully!")
             return redirect("dashboard")
     else:
         form = AuthenticationForm()
@@ -109,7 +111,8 @@ def submit_work_time(request):
             work_time_entry.user = request.user
             work_time_entry.save()
             log_activity(request.user, "Submit Worklog")
-            return redirect("dashboard")
+            messages.success(request, "Worklog submitted successfully!")
+            return redirect("submit_work_time")
     else:
         form = WorkTimeEntryForm()
     return render(request, "worktime/submit_work_time.html", {"form": form})
@@ -162,7 +165,7 @@ def upload_time_logs(request):
                     breakin_time=row["Break-In Time"],
                 )
                 log_activity(request.user, "Upload Work Time")
-
+            messages.success(request, "Worklogs uploaded successfully!")
             return redirect("dashboard")
     else:
         form = UploadExcelForm()
@@ -324,15 +327,12 @@ def update_salary_expenses(request):
         if form.is_valid():
             form.save()
             log_activity(request.user, "Update salary")
-            return redirect("salary_expenses_success")
+            messages.success(request, "Salary Expenses are submitted successfully!")
+            return redirect("update_salary_expenses")
     else:
         form = SalaryExpensesForm(instance=profile)
 
     return render(request, "worktime/update_salary_expenses.html", {"form": form})
-
-
-def salary_expenses_success(request):
-    return render(request, "worktime/success.html")
 
 
 @login_required
@@ -391,6 +391,7 @@ def add_leave(request):
             leave.user = request.user
             leave.save()
             log_activity(request.user, "Apply Leave")
+            messages.success(request, "Leave added successfully!")
             return redirect("dashboard")
     else:
         form = LeaveForm()
@@ -406,6 +407,7 @@ def create_task(request):
             task.user = request.user
             task.save()
             log_activity(request.user, "Create Task")
+            messages.success(request, "Task added successfully!")
             return redirect("task_list")
     else:
         form = TaskForm()

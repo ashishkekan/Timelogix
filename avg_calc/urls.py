@@ -16,9 +16,6 @@ urlpatterns = [
     path("download_template/", views.download_template, name="download_template"),
     path("expenses/", views.total_expenses, name="expenses"),
     path("update-salary/", views.update_salary_expenses, name="update_salary_expenses"),
-    path(
-        "salary-success/", views.salary_expenses_success, name="salary_expenses_success"
-    ),
     path("calculate-work-time/", views.calculate_work_time, name="calculate_work_time"),
     path(
         "work-summary/<int:pk>/", views.work_summary_detail, name="work_summary_detail"
