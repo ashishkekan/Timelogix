@@ -105,6 +105,7 @@
           <th>Breakout Time</th>
           <th>Breakin Time</th>
           <th>Total Work Time</th>
+          <th>Options</th>
         </tr>
       </thead>
       <tbody>
@@ -117,6 +118,11 @@
             <td>{{ entry.breakout_time|date:"h:i A" }}</td>
             <td>{{ entry.breakin_time|date:"h:i A" }}</td>
             <td>{{ entry.total_work_time }}</td>
+            <td>
+              <a href="{% url 'edit_work_entry' entry.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <a href="{% url 'delete_work_entry' entry.id %}" class="btn btn-sm btn-danger"
+                 onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+            </td>
           </tr>
           {% endfor %}
         {% else %}
