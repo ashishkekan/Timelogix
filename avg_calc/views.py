@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import (
     ChangePasswordForm,
@@ -480,6 +480,33 @@ def work_view(request):
             "month_form": month_form,
         },
     )
+
+
+@login_required
+def edit_work_entry(request, pk):
+    entry = get_object_or_404(WorkTimeEntry, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        form = WorkTimeEntryForm(request.POST, instance=entry)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Work entry updated successfully.")
+            return redirect("work_view")
+    else:
+        form = WorkTimeEntryForm(instance=entry)
+
+    return render(request, "worktime/work-edit.html", {"form": form})
+
+
+@login_required
+def delete_work_entry(request, pk):
+    entry = get_object_or_404(WorkTimeEntry, pk=pk, user=request.user)
+    if request.method == "POST":
+        entry.delete()
+        messages.success(request, "Work entry deleted successfully.")
+        return redirect("work_view")
+
+    return render(request, "worktime/work-delete-confirm.html", {"entry": entry})
 
 
 @login_required
