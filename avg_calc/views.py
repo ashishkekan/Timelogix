@@ -491,7 +491,7 @@ def edit_work_entry(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Work entry updated successfully.")
-            return redirect("work_view")
+            return redirect("worktime")
     else:
         form = WorkTimeEntryForm(instance=entry)
 
@@ -504,7 +504,7 @@ def delete_work_entry(request, pk):
     if request.method == "POST":
         entry.delete()
         messages.success(request, "Work entry deleted successfully.")
-        return redirect("work_view")
+        return redirect("worktime")
 
     return render(request, "worktime/work-delete-confirm.html", {"entry": entry})
 
