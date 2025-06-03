@@ -535,7 +535,11 @@ def work_view(request):
 
 @login_required
 def edit_work_entry(request, pk):
-    entry = get_object_or_404(WorkTimeEntry, pk=pk, user=request.user)
+    entry = None
+    if request.user.is_staff:
+        entry = get_object_or_404(WorkTimeEntry, pk=pk)
+    else:
+        entry = get_object_or_404(WorkTimeEntry, pk=pk, user=request.user)
 
     if request.method == "POST":
         form = WorkTimeEntryForm(request.POST, instance=entry)
@@ -546,12 +550,16 @@ def edit_work_entry(request, pk):
     else:
         form = WorkTimeEntryForm(instance=entry)
 
-    return render(request, "worktime/work-edit.html", {"form": form})
+    return render(request, "worktime/work-edit.html", {"form": form, "entry": entry})
 
 
 @login_required
 def delete_work_entry(request, pk):
-    entry = get_object_or_404(WorkTimeEntry, pk=pk, user=request.user)
+    if request.user.is_staff:
+        entry = get_object_or_404(WorkTimeEntry, pk=pk)
+    else:
+        entry = get_object_or_404(WorkTimeEntry, pk=pk, user=request.user)
+
     if request.method == "POST":
         entry.delete()
         messages.success(request, "Work entry deleted successfully.")
