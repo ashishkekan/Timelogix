@@ -106,7 +106,7 @@ def profile_view(request):
 
 
 @login_required
-def submit_work_time(request):
+def create_timelogs(request):
     if request.method == "POST":
         form = WorkTimeEntryForm(request.POST)
         if form.is_valid():
@@ -115,14 +115,14 @@ def submit_work_time(request):
             work_time_entry.save()
             log_activity(request.user, "Submit Worklog")
             messages.success(request, "Worklog submitted successfully!")
-            return redirect("submit_work_time")
+            return redirect("create-timelogs")
     else:
         form = WorkTimeEntryForm()
     return render(request, "worktime/submit_work_time.html", {"form": form})
 
 
 @login_required
-def download_template(request):
+def export_template(request):
     df = pd.DataFrame(
         columns=["Date", "Login Time", "Logout Time", "Break-Out Time", "Break-In Time"]
     )
@@ -420,7 +420,7 @@ def update_salary_expenses(request):
             salary.save()
             log_activity(request.user, "Update salary")
             messages.success(request, "Salary Expenses are submitted successfully!")
-            return redirect("update_salary_expenses")
+            return redirect("create-expenses")
     else:
         form = SalaryExpensesForm(instance=profile)
 
@@ -461,7 +461,7 @@ def calculate_work_time(request):
             )
             summary.save()
             log_activity(request.user, "Calculate Work Time")
-            return redirect("work_summary_detail", pk=summary.pk)
+            return redirect("time-details", pk=summary.pk)
     else:
         form = DailyWorkSummaryForm()
 
@@ -500,7 +500,7 @@ def create_task(request):
             task.save()
             log_activity(request.user, "Create Task")
             messages.success(request, "Task added successfully!")
-            return redirect("task_list")
+            return redirect("task-list")
     else:
         form = TaskForm()
     return render(request, "worktime/task_form.html", {"form": form})
@@ -610,7 +610,7 @@ def work_view(request):
 
 
 @login_required
-def edit_work_entry(request, pk):
+def edit_timelogs(request, pk):
     entry = None
     if request.user.is_staff:
         entry = get_object_or_404(WorkTimeEntry, pk=pk)
@@ -630,7 +630,7 @@ def edit_work_entry(request, pk):
 
 
 @login_required
-def delete_work_entry(request, pk):
+def delete_timelogs(request, pk):
     if request.user.is_staff:
         entry = get_object_or_404(WorkTimeEntry, pk=pk)
     else:

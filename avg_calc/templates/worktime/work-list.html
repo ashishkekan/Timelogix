@@ -13,7 +13,7 @@
       {% if request.user.is_staff %}
       <div class="col-md-6">
         <div class="d-flex justify-content-end align-items-center gap-5">
-          <a href="{% url 'submit_work_time' %}" class="btn-create">+</a>
+          <a href="{% url 'create-timelogs' %}" class="btn-create">+</a>
           <form method="get" class="custom-form mb-0 d-flex align-items-center gap-2">
             <div class="form-group mb-0">
               {{ month_form.month|add_class:"form-select" }}
@@ -28,7 +28,7 @@
       {% else %}
       <div class="col-md-6">
         <div class="d-flex justify-content-end align-items-center gap-5">
-          <a href="{% url 'submit_work_time' %}" class="btn-create">+</a>
+          <a href="{% url 'create-timelogs' %}" class="btn-create">+</a>
           <form method="get" class="custom-form mb-0 d-flex align-items-center">
             <div class="form-group mb-0">
               {{ month_form.month|add_class:"form-select" }}
@@ -64,8 +64,8 @@
             <td>{{ entry.breakin_time|date:"h:i A" }}</td>
             <td>{{ entry.total_work_time }}</td>
             <td>
-              <a href="{% url 'edit_work_entry' entry.id %}" class="btn btn-sm btn-warning">Edit</a>
-              <form action="{% url 'delete_work_entry' entry.id %}" method="POST" style="display:inline;">
+              <a href="{% url 'edit-timelogs' entry.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <form action="{% url 'delete-timelogs' entry.id %}" method="POST" style="display:inline;">
                 {% csrf_token %}
                   <button type="submit" class="btn btn-sm btn-danger"
                           onclick="return confirm('Are you sure you want to delete this entry?');">
