@@ -96,12 +96,14 @@
             </div>
         </div>
     </a>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Total Worklogs</h5>
-            <p class="card-text">{{ total_worklogs }}</p>
+    <a href="{% url 'worktime' %}" class="d-block text-decoration-none card-link-wrapper">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Worklogs</h5>
+                <p class="card-text">{{ total_worklogs }}</p>
+            </div>
         </div>
-    </div>
+    </a>
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Total Expenses</h5>

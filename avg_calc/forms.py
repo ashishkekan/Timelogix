@@ -47,6 +47,18 @@ class MonthChoiceForm(forms.Form):
         label="Select Month",
         initial=str(datetime.now().month),
     )
+    user = forms.ChoiceField(
+        choices=[("", "All Users")]
+        + [(user.id, user.username) for user in User.objects.all()],
+        required=False,
+        label="Select User",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["user"].choices = [("", "All Users")] + [
+            (user.id, user.username) for user in User.objects.all()
+        ]
 
 
 class DailyWorkSummaryForm(forms.ModelForm):
