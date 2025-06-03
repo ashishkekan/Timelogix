@@ -1,41 +1,151 @@
 {% extends "navbar/base.html" %}
 
+{% load custom_filter %}
+
 {% block title %}Total Expenses{% endblock %}
 
 {% block content %}
-<div class="table-container mt-5">
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
-      <h2 class="mb-4">Total Expenses for {{ month }}</h2>
+<style>
+    .custom-form {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .custom-form .form-group {
+        margin: 0;
+    }
+    .custom-form .form-control,
+    .custom-form select {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        padding: 6px 12px;
+        background-color: #f8f9fa;
+    }
+    .custom-form .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        padding: 6px 12px;
+        border-radius: 5px;
+    }
+    .table-container {
+        margin: 20px 0;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table th, .table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .pagination .page-link {
+        color: #28a745;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+      <h2 class="fw-bold">Total Expenses for {{ month }}</h2>
       
-      <form method="get" class="form-inline d-flex align-items-center gap-2">
-        <div class="form-group mb-0 mr-2">
-          <label for="{{ month_form.month.id_for_label }}" class="mr-2">Month:</label>
-          {{ month_form.month }}
-        </div>
-        <button class="btn btn-primary" type="submit">Filter</button>
-      </form>
+      {% if request.user.is_staff %}
+        <form method="get" class="custom-form">
+            <div class="form-group">
+                {{ month_form.month|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ month_form.year|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ month_form.user|add_class:"form-control" }}
+            </div>
+            <button class="btn btn-primary" type="submit">Filter</button>
+        </form>
+      {% else %}
+        <form method="get" class="custom-form">
+            <div class="form-group">
+                {{ month_form.month|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ month_form.year|add_class:"form-control" }}
+            </div>
+            <button class="btn btn-primary" type="submit">Filter</button>
+        </form>
+      {% endif %}
     </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Month</th>
-                <th>Salary</th>
-                <th>PF</th>
-                <th>Lunch Expenses</th>
-                <th>Total Lunch Expenses</th>
-                <th>Balance</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ month }}</td>
-                <td>{{ salary }}</td>
-                <td>{{ pf }}</td>
-                <td>50 Rs</td>
-                <td>{{ total_lunch_expenses }}</td>
-                <td>{{ balance }}</td>
-            </tr>
-        </tbody>
-    </table>
+
+    <div class="table-container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Salary</th>
+                    <th>PF</th>
+                    <th>Lunch Expense (Per Day)</th>
+                    <th>Total Lunch Expenses</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ month }}</td>
+                    <td>{{ salary }}</td>
+                    <td>{{ pf }}</td>
+                    <td>50 Rs</td>
+                    <td>{{ total_lunch_expenses }}</td>
+                    <td>{{ balance }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if entries.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ entries.previous_page_number }}&month={{ month_form.month.value|default_if_none:'' }}&year={{ month_form.year.value|default_if_none:'' }}&user={{ month_form.user.value|default_if_none:'' }}" aria-label="Previous">
+                                <span aria-hidden="true">«</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">«</span>
+                        </li>
+                    {% endif %}
+
+                    {% for num in entries.paginator.page_range %}
+                        {% if entries.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}&month={{ month_form.month.value|default_if_none:'' }}&year={{ month_form.year.value|default_if_none:'' }}&user={{ month_form.user.value|default_if_none:'' }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if entries.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ entries.next_page_number }}&month={{ month_form.month.value|default_if_none:'' }}&year={{ month_form.year.value|default_if_none:'' }}&user={{ month_form.user.value|default_if_none:'' }}" aria-label="Next">
+                                <span aria-hidden="true">»</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">»</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
 </div>
 {% endblock %}

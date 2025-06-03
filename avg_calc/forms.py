@@ -45,11 +45,15 @@ class MonthChoiceForm(forms.Form):
     month = forms.ChoiceField(
         choices=[(str(i), calendar.month_name[i]) for i in range(1, 13)],
         label="Select Month",
-        initial=str(datetime.now().month),
+    )
+    year = forms.ChoiceField(
+        choices=[(year, year) for year in range(2020, datetime.now().year + 1)],
+        required=False,
+        label="Select Year",
     )
     user = forms.ChoiceField(
         choices=[("", "All Users")]
-        + [(user.id, user.username) for user in User.objects.all()],
+        + [(user.id, user.username) for user in User.objects.filter(is_staff=False)],
         required=False,
         label="Select User",
     )
@@ -57,7 +61,10 @@ class MonthChoiceForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["user"].choices = [("", "All Users")] + [
-            (user.id, user.username) for user in User.objects.all()
+            (user.id, user.username) for user in User.objects.filter(is_staff=False)
+        ]
+        self.fields["year"].choices = [
+            (year, year) for year in range(2020, datetime.now().year + 1)
         ]
 
 
