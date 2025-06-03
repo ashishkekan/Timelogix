@@ -23,37 +23,39 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'dashboard' %}"><b>Dashboard</b></a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'worktime' %}"><b>Worklog</b></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'upload_time_logs' %}"><b>Upload Worklog</b></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'expenses' %}"><b>Expenses</b></a>
-                    </li>
-                </ul>
-              {% endif %}
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <b>{{ user.username }}</b>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
-                                <form method="post" action="{% url 'logout' %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item">Logout</button>
-                                </form>
-                            </div>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
-                        </li>
+                    {% if not user.is_staff %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'worktime' %}"><b>Worklog</b></a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'upload_time_logs' %}"><b>Upload Worklog</b></a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'expenses' %}"><b>Expenses</b></a>
+                      </li>
                     {% endif %}
                 </ul>
+              {% endif %}
+              <ul class="navbar-nav">
+                  {% if user.is_authenticated %}
+                      <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <b>{{ user.username }}</b>
+                          </a>
+                          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+                              <form method="post" action="{% url 'logout' %}">
+                                  {% csrf_token %}
+                                  <button type="submit" class="dropdown-item">Logout</button>
+                              </form>
+                          </div>
+                      </li>
+                  {% else %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'login' %}">Login</a>
+                      </li>
+                  {% endif %}
+              </ul>
             </div>
         </nav>
     </header>

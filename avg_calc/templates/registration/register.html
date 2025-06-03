@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header text-center">
+                <div class="card-header text-center text-white" style="background-color: rgb(3, 171, 180);">
                     <h2>Register</h2>
                 </div>
                 <div class="card-body">
@@ -15,7 +15,7 @@
                         {% csrf_token %}
                         {{ form.as_p }}
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                            <button type="submit" class="btn btn-primary">Register</button>
                         </div>
                     </form>
                 </div>
