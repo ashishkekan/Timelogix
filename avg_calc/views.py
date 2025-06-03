@@ -641,7 +641,7 @@ def delete_work_entry(request, pk):
         messages.success(request, "Work entry deleted successfully.")
         return redirect("worktime")
 
-    return render(request, "worktime/work-delete-confirm.html", {"entry": entry})
+    return render(request, "worktime/work-list.html", {"entry": entry})
 
 
 @login_required
