@@ -170,3 +170,11 @@ body {
 .card-link-wrapper:hover .card-text {
     color: #28a745 !important;
 }
+
+.pagination .page-link {
+    color: #28a745;
+}
+.pagination .page-item.active .page-link {
+    background-color: #28a745;
+    border-color: #28a745;
+}

@@ -1,54 +1,11 @@
 {% extends "navbar/base.html" %}
 
 {% load custom_filter %}
+{% load static %}
 
 {% block title %}Total Expenses{% endblock %}
 
 {% block content %}
-<style>
-    .custom-form {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    .custom-form .form-group {
-        margin: 0;
-    }
-    .custom-form .form-control,
-    .custom-form select {
-        border-radius: 5px;
-        border: 1px solid #ced4da;
-        padding: 6px 12px;
-        background-color: #f8f9fa;
-    }
-    .custom-form .btn-primary {
-        background-color: #28a745;
-        border-color: #28a745;
-        padding: 6px 12px;
-        border-radius: 5px;
-    }
-    .table-container {
-        margin: 20px 0;
-    }
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .table th, .table td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-    .pagination .page-link {
-        color: #28a745;
-    }
-    .pagination .page-item.active .page-link {
-        background-color: #28a745;
-        border-color: #28a745;
-    }
-</style>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
