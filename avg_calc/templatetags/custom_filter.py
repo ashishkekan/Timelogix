@@ -1,3 +1,6 @@
+from math import isnan
+
+from babel.numbers import format_number
 from django import template
 
 register = template.Library()
@@ -13,3 +16,14 @@ def format_duration(seconds):
 @register.filter(name="add_class")
 def add_class(field, css_class):
     return field.as_widget(attrs={"class": css_class})
+
+
+@register.filter(name="currency_format")
+def currency_format(number):
+    if not number or (isinstance(number, float) and isnan(number)):
+        return "₹0"
+    try:
+        indian_currency_format = format_number(number, locale="en_IN")
+    except Exception:
+        return "-"
+    return "₹" + str(indian_currency_format)
