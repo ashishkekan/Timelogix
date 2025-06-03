@@ -60,6 +60,11 @@ class MonthChoiceForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        current_date = datetime.now()
+        self.fields["month"].initial = str(current_date.month)
+        self.fields["year"].initial = current_date.year
+
         self.fields["user"].choices = [("", "All Users")] + [
             (user.id, user.username) for user in User.objects.filter(is_staff=False)
         ]
