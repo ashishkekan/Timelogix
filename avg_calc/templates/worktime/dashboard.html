@@ -60,6 +60,7 @@
 
     .card-body {
         padding: 16px;
+        color: black;
     }
 
     .table-container {
@@ -93,6 +94,10 @@
 
     .card-link-wrapper:hover .card-title {
         color: #28a745;
+    }
+
+    .card-link-wrapper:hover .card-text {
+        color: #28a745 !important;
     }
 </style>
 
@@ -181,12 +186,14 @@
 </div>
 {% else %}
 <div class="dashboard-area mb-4">
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Total Users</h5>
-            <p class="card-text">{{ total_users }}</p>
+    <a href="{% url 'user-list' %}" class="d-block text-decoration-none card-link-wrapper">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Users</h5>
+                <p class="card-text">{{ total_users }}</p>
+            </div>
         </div>
-    </div>
+    </a>
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Total Worklogs</h5>

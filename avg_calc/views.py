@@ -22,6 +22,7 @@ from .forms import (
     SalaryExpensesForm,
     TaskForm,
     UploadExcelForm,
+    UserEditForm,
     WorkTimeEntryForm,
 )
 from .models import (
@@ -528,3 +529,44 @@ def delete_work_entry(request, pk):
 def leaves(request):
     leaves = Leave.objects.filter(user=request.user)
     return render(request, "worktime/leaves.html", {"leaves": leaves})
+
+
+@login_required
+def users(request):
+    users = User.objects.all()
+    paginator = Paginator(users, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "users": users,
+        "page_obj": page_obj,
+    }
+    return render(request, "worktime/users.html", context)
+
+
+@login_required
+def edit_user(request, user_id):
+    user_obj = get_object_or_404(User, id=user_id)
+    if request.method == "POST":
+        form = UserEditForm(request.POST, instance=user_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "User updated successfully.")
+            return redirect("user-list")
+    else:
+        form = UserEditForm(instance=user_obj)
+
+    return render(
+        request, "worktime/edit-user.html", {"form": form, "user_obj": user_obj}
+    )
+
+
+@login_required
+def delete_user(request, user_id):
+    user_obj = get_object_or_404(User, id=user_id)
+    if request.method == "POST":
+        user_obj.delete()
+        messages.success(request, "User deleted successfully.")
+        return redirect("user-list")
+    return render(request, "worktime/users.html", {"user_obj": user_obj})
