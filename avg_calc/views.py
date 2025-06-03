@@ -455,35 +455,73 @@ def work_view(request):
     today = datetime.now().date()
     month_form = MonthChoiceForm(request.GET or None)
 
-    selected_month = int(month_form.data.get("month", today.month))
+    # Extract month/year, with validation
+    selected_month = (
+        int(month_form.data.get("month", today.month))
+        if month_form.is_valid()
+        else today.month
+    )
     selected_year = today.year
 
+    # Calculate date range for the selected month
     start_of_month = datetime(selected_year, selected_month, 1).date()
     end_of_month = start_of_month.replace(
         month=selected_month % 12 + 1, day=1
     ) - timedelta(days=1)
 
-    leaves = Leave.objects.filter(
-        user=request.user, start_date__lte=end_of_month, end_date__gte=start_of_month
-    )
+    # Get leave days for the relevant user
+    if request.user.is_staff:
+        selected_user_id = (
+            month_form.data.get("user") if month_form.is_valid() else None
+        )
+        target_user = (
+            User.objects.get(id=selected_user_id) if selected_user_id else request.user
+        )
+    else:
+        target_user = request.user
 
+    leaves = Leave.objects.filter(
+        user=target_user, start_date__lte=end_of_month, end_date__gte=start_of_month
+    )
     leave_days = set()
     for leave in leaves:
         leave_days.update(
-            [
-                leave.start_date + timedelta(days=i)
-                for i in range((leave.end_date - leave.start_date).days + 1)
-            ]
+            leave.start_date + timedelta(days=i)
+            for i in range((leave.end_date - leave.start_date).days + 1)
         )
 
-    all_entries = (
-        WorkTimeEntry.objects.filter(
-            user=request.user, date__range=[start_of_month, end_of_month]
+    # Filter work time entries
+    if request.user.is_staff:
+        selected_user_id = (
+            month_form.data.get("user") if month_form.is_valid() else None
         )
-        .exclude(date__in=leave_days)
-        .order_by("date")
-    )
+        if selected_user_id:
+            # Filter by selected user
+            all_entries = (
+                WorkTimeEntry.objects.filter(
+                    user_id=selected_user_id, date__range=[start_of_month, end_of_month]
+                )
+                .exclude(date__in=leave_days)
+                .order_by("date")
+            )
+        else:
+            # Show all users' entries
+            all_entries = (
+                WorkTimeEntry.objects.filter(date__range=[start_of_month, end_of_month])
+                .exclude(date__in=leave_days)
+                .order_by("date")
+            )
+    else:
+        # Non-staff users see only their own entries
+        all_entries = (
+            WorkTimeEntry.objects.filter(
+                user=request.user, date__range=[start_of_month, end_of_month]
+            )
+            .exclude(date__in=leave_days)
+            .order_by("date")
+        )
 
+    # Paginate entries
     paginator = Paginator(all_entries, 10)
     page_number = request.GET.get("page")
     entries = paginator.get_page(page_number)
@@ -491,10 +529,7 @@ def work_view(request):
     return render(
         request,
         "worktime/work-list.html",
-        {
-            "entries": entries,
-            "month_form": month_form,
-        },
+        {"entries": entries, "month_form": month_form},
     )
 
 

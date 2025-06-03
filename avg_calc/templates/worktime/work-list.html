@@ -82,6 +82,22 @@
         <h4 class="text-muted">Hi, {{ request.user.username }}</h4>
       </div>
   
+      {% if request.user.is_staff %}
+      <div class="col-md-6">
+        <div class="d-flex justify-content-end align-items-center gap-5">
+          <a href="{% url 'submit_work_time' %}" class="btn-create">+</a>
+          <form method="get" class="custom-form mb-0 d-flex align-items-center gap-2">
+            <div class="form-group mb-0">
+              {{ month_form.month|add_class:"form-select" }}
+            </div>
+            <div class="form-group mb-0">
+              {{ month_form.user|add_class:"form-select" }}
+            </div>
+            <button class="btn btn-primary ms-2" type="submit">Filter</button>
+          </form>
+        </div>
+      </div>
+      {% else %}
       <div class="col-md-6">
         <div class="d-flex justify-content-end align-items-center gap-5">
           <a href="{% url 'submit_work_time' %}" class="btn-create">+</a>
@@ -93,6 +109,7 @@
           </form>
         </div>
       </div>
+      {% endif %}
     </div>  
 
   <div class="table-container">
@@ -137,13 +154,13 @@
         <ul class="pagination">
           {% if entries.has_previous %}
             <li class="page-item">
-              <a class="page-link" href="?page={{ entries.previous_page_number }}&month={{ month_form.month.value }}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
+              <a class="page-link" href="?page={{ entries.previous_page_number }}&month={{ month_form.month.value }}&user={{ month_form.user.value|default_if_none:'' }}" aria-label="Previous">
+                <span aria-hidden="true">«</span>
               </a>
             </li>
           {% else %}
             <li class="page-item disabled">
-              <span class="page-link">&laquo;</span>
+              <span class="page-link">«</span>
             </li>
           {% endif %}
     
@@ -154,20 +171,20 @@
               </li>
             {% else %}
               <li class="page-item">
-                <a class="page-link" href="?page={{ num }}&month={{ month_form.month.value }}">{{ num }}</a>
+                <a class="page-link" href="?page={{ num }}&month={{ month_form.month.value }}&user={{ month_form.user.value|default_if_none:'' }}">{{ num }}</a>
               </li>
             {% endif %}
           {% endfor %}
     
           {% if entries.has_next %}
             <li class="page-item">
-              <a class="page-link" href="?page={{ entries.next_page_number }}&month={{ month_form.month.value }}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
+              <a class="page-link" href="?page={{ entries.next_page_number }}&month={{ month_form.month.value }}&user={{ month_form.user.value|default_if_none:'' }}" aria-label="Next">
+                <span aria-hidden="true">»</span>
               </a>
             </li>
           {% else %}
             <li class="page-item disabled">
-              <span class="page-link">&raquo;</span>
+              <span class="page-link">»</span>
             </li>
           {% endif %}
         </ul>
