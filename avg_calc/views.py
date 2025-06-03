@@ -293,38 +293,114 @@ def dashboard(request):
 
 @login_required
 def total_expenses(request):
-    user = request.user
-    profile, _ = SalaryExpenses.objects.get_or_create(user=user, defaults={"salary": 0})
-
+    today = datetime.now().date()
     month_form = MonthChoiceForm(request.GET or None)
 
-    today = datetime.now().date()
-    selected_month = int(request.GET.get("month", today.month))
-    selected_year = int(request.GET.get("year", today.year))
+    selected_month = (
+        int(request.GET.get("month", today.month))
+        if month_form.is_valid()
+        else today.month
+    )
+    selected_year = (
+        int(request.GET.get("year", today.year))
+        if month_form.is_valid()
+        else today.year
+    )
 
     start_of_month = datetime(selected_year, selected_month, 1).date()
     end_of_month = start_of_month.replace(
         month=selected_month % 12 + 1, day=1
     ) - timedelta(days=1)
 
-    entries = WorkTimeEntry.objects.filter(
-        user=user, date__range=[start_of_month, end_of_month]
-    )
-    total_lunch_expenses = entries.count() * 50
-
-    pf = 200
-    payment = profile.salary - pf
-    balance = payment - total_lunch_expenses
-
     context = {
-        "salary": payment,
-        "pf": pf,
-        "entries": entries,
-        "total_lunch_expenses": total_lunch_expenses,
-        "balance": balance,
         "month": start_of_month.strftime("%B %Y"),
         "month_form": month_form,
+        "entries": [],
+        "salary": 0,
+        "pf": 0,
+        "total_lunch_expenses": 0,
+        "balance": 0,
+        "no_data": False,
     }
+
+    if request.user.is_staff:
+        selected_user_id = (
+            month_form.data.get("user") if month_form.is_valid() else None
+        )
+        if selected_user_id:
+            try:
+                target_user = User.objects.get(id=selected_user_id)
+                profile = SalaryExpenses.objects.filter(user=target_user).first()
+                if profile:
+                    entries = WorkTimeEntry.objects.filter(
+                        user=target_user, date__range=[start_of_month, end_of_month]
+                    )
+                    total_lunch_expenses = entries.count() * 50
+                    pf = 200
+                    payment = profile.salary - pf
+                    balance = payment - total_lunch_expenses
+                    context.update(
+                        {
+                            "entries": entries,
+                            "salary": payment,
+                            "pf": pf,
+                            "total_lunch_expenses": total_lunch_expenses,
+                            "balance": balance,
+                        }
+                    )
+                else:
+                    context["no_data"] = True
+            except User.DoesNotExist:
+                context["no_data"] = True
+        else:
+            profiles = SalaryExpenses.objects.filter(user__is_superuser=False)
+            if profiles.exists():
+                entries = WorkTimeEntry.objects.filter(
+                    date__range=[start_of_month, end_of_month], user__is_superuser=False
+                )
+                total_lunch_expenses = entries.count() * 50
+                total_salary = sum(profile.salary for profile in profiles)
+                total_pf = profiles.count() * 200
+                total_payment = total_salary - total_pf
+                balance = total_payment - total_lunch_expenses
+                context.update(
+                    {
+                        "entries": entries,
+                        "salary": total_payment,
+                        "pf": total_pf,
+                        "total_lunch_expenses": total_lunch_expenses,
+                        "balance": balance,
+                    }
+                )
+            else:
+                context["no_data"] = True
+    else:
+        profile = SalaryExpenses.objects.filter(user=request.user).first()
+        if profile:
+            entries = WorkTimeEntry.objects.filter(
+                user=request.user, date__range=[start_of_month, end_of_month]
+            )
+            total_lunch_expenses = entries.count() * 50
+            pf = 200
+            payment = profile.salary - pf
+            balance = payment - total_lunch_expenses
+            context.update(
+                {
+                    "entries": entries,
+                    "salary": payment,
+                    "pf": pf,
+                    "total_lunch_expenses": total_lunch_expenses,
+                    "balance": balance,
+                }
+            )
+        else:
+            context["no_data"] = True
+
+    # Paginate entries
+    paginator = Paginator(context["entries"], 10)
+    page_number = request.GET.get("page")
+    context["entries"] = paginator.get_page(page_number)
+
     return render(request, "worktime/total_expenses.html", context)
 
 
