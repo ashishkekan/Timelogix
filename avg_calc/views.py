@@ -7,7 +7,9 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -256,7 +258,12 @@ def dashboard(request):
         overtime = overtime_by_days / 60
 
     average_time = total_work_seconds / len(entries) if entries else 0
-
+    total_users = User.objects.all().count()
+    total_worklogs = WorkTimeEntry.objects.all().count()
+    total_expenses = SalaryExpenses.objects.aggregate(total=Sum("salary"))
+    total_tasks = Task.objects.all().count()
+    total_leaves = Leave.objects.all().count()
+    top_3_recent_activity = RecentActivity.objects.order_by("-timestamp")[:3]
     context = {
         "month_form": month_form,
         "entries": entries,
@@ -273,6 +280,12 @@ def dashboard(request):
             format_duration(need_time) if need_time else "0 hours, 0 minutes"
         ),
         "overtime": format_duration(overtime) if overtime else "0 hours, 0 minutes",
+        "total_users": total_users,
+        "total_worklogs": total_worklogs,
+        "total_expenses": total_expenses["total"],
+        "total_tasks": total_tasks,
+        "total_leaves": total_leaves,
+        "top_3_recent_activity": top_3_recent_activity,
     }
     return render(request, "worktime/dashboard.html", context)
 
@@ -325,7 +338,9 @@ def update_salary_expenses(request):
     if request.method == "POST":
         form = SalaryExpensesForm(request.POST, instance=profile)
         if form.is_valid():
-            form.save()
+            salary = form.save(commit=False)
+            salary.user = request.user
+            salary.save()
             log_activity(request.user, "Update salary")
             messages.success(request, "Salary Expenses are submitted successfully!")
             return redirect("update_salary_expenses")

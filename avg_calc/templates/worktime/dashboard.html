@@ -1,5 +1,6 @@
 {% extends "navbar/base.html" %}
 {% load static %}
+{% load custom_filter %}
 {% block content %}
 <style>
     .custom-form {
@@ -97,70 +98,70 @@
 
 <h2>My Dashboard</h2>
 <h3>Hi, {{ request.user.username }}</h3>
+{% if not request.user.is_staff %}
+    <form method="get" class="custom-form">
+        <div class="form-group">
+            <div class="dropdown">
+                {{ month_form.month }}
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Filter</button>
+    </form>
 
-<form method="get" class="custom-form">
-    <div class="form-group">
-        <div class="dropdown">
-            {{ month_form.month }}
-        </div>
-    </div>
-    <button class="btn btn-primary" type="submit">Filter</button>
-</form>
-
-<div class="dashboard-area mb-4">
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Total Time In This Month</h5>
-            <p class="card-text">{{ total_work_time }}</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Average Time Per Day</h5>
-            <p class="card-text">{{ time_needed }}</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">No. of Days in the Month</h5>
-            <p class="card-text">{{ entries.count }}</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Average Time</h5>
-            <p class="card-text">{{ average_time }}</p>
-        </div>
-    </div>
-    <a href="{% url 'calculate_work_time' %}" class="d-block text-decoration-none card-link-wrapper">
+    <div class="dashboard-area mb-4">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title mb-0">Calculate Work Time</h5>
+                <h5 class="card-title">Total Time In This Month</h5>
+                <p class="card-text">{{ total_work_time }}</p>
             </div>
         </div>
-    </a>
-    <a href="{% url 'update_salary_expenses' %}" class="d-block text-decoration-none card-link-wrapper">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title mb-0">Salary Expenses</h5>
+                <h5 class="card-title">Average Time Per Day</h5>
+                <p class="card-text">{{ time_needed }}</p>
             </div>
         </div>
-    </a>
-    <a href="{% url 'leaves' %}" class="d-block text-decoration-none card-link-wrapper">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title mb-0">Leaves</h5>
+                <h5 class="card-title">No. of Days in the Month</h5>
+                <p class="card-text">{{ entries.count }}</p>
             </div>
         </div>
-    </a>
-    <a href="{% url 'create_task' %}" class="d-block text-decoration-none card-link-wrapper">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title mb-0">Tasks</h5>
+                <h5 class="card-title">Average Time</h5>
+                <p class="card-text">{{ average_time }}</p>
             </div>
         </div>
-    </a>
-</div>
+        <a href="{% url 'calculate_work_time' %}" class="d-block text-decoration-none card-link-wrapper">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-0">Calculate Work Time</h5>
+                </div>
+            </div>
+        </a>
+        <a href="{% url 'update_salary_expenses' %}" class="d-block text-decoration-none card-link-wrapper">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-0">Salary Expenses</h5>
+                </div>
+            </div>
+        </a>
+        <a href="{% url 'leaves' %}" class="d-block text-decoration-none card-link-wrapper">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-0">Leaves</h5>
+                </div>
+            </div>
+        </a>
+        <a href="{% url 'create_task' %}" class="d-block text-decoration-none card-link-wrapper">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-0">Tasks</h5>
+                </div>
+            </div>
+        </a>
+    </div>
 
 <div class="row mb-4">
     <div class="col-md-12">
@@ -178,5 +179,49 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="dashboard-area mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Total Users</h5>
+            <p class="card-text">{{ total_users }}</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Total Worklogs</h5>
+            <p class="card-text">{{ total_worklogs }}</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Total Expenses</h5>
+            <p class="card-text">{{ total_expenses|currency_format }}</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Total Tasks</h5>
+            <p class="card-text">{{ total_tasks }}</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Total Leaves</h5>
+            <p class="card-text">{{ total_leaves }}</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Top 3 Recent Activity</h5>
+            <p class="card-text">
+                {% for u in top_3_recent_activity %}
+                    {{ u.user }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}
