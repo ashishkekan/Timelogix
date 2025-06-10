@@ -1,140 +1,500 @@
-{% extends "navbar/base.html" %}
 {% load static %}
-{% load custom_filter %}
-{% block content %}
 
-<h2>My Dashboard</h2>
-<h3>Hi, {{ request.user.username }}</h3>
-{% if not request.user.is_staff %}
-    <form method="get" class="custom-form">
-        <div class="form-group">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TimeLogs - Time Tracking Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo Section -->
+        <div class="nav-brand">
+          <div class="brand-logo">
+            <i class="far fa-clock"></i>
+            <span class="brand-text">TimeLogs</span>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="nav-menu" id="nav-menu">
+          <div class="nav-links">
+            <a href="#" class="nav-link active">Dashboard</a>
+            <a href="#" class="nav-link" id="worklog-link">Worklog</a>
+            <a href="#" class="nav-link" id="upload-link">Upload Worklog</a>
+            <a href="#" class="nav-link" id="expenses-link">Expenses</a>
+          </div>
+
+          <!-- User Menu -->
+          <div class="user-menu">
             <div class="dropdown">
-                {{ month_form.month }}
+              <button class="dropdown-btn" id="user-dropdown">
+                <i class="fas fa-user"></i>
+                <span id="username">john_doe</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="dropdown-content" id="dropdown-content">
+                <a href="#" class="dropdown-item">
+                  <i class="fas fa-cog"></i>
+                  Profile
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item switch-view" id="switch-view">
+                  <i class="fas fa-exchange-alt"></i>
+                  <span id="switch-text">Switch to Admin View</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item logout">
+                  <i class="fas fa-sign-out-alt"></i>
+                  Logout
+                </a>
+              </div>
             </div>
+          </div>
         </div>
-        <button class="btn btn-primary" type="submit">Filter</button>
-    </form>
 
-    <div class="dashboard-area mb-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Time In This Month</h5>
-                <p class="card-text">{{ total_work_time }}</p>
-            </div>
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-toggle" id="mobile-toggle">
+          <i class="fas fa-bars"></i>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Average Time Per Day</h5>
-                <p class="card-text">{{ time_needed }}</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">No. of Days in the Month</h5>
-                <p class="card-text">{{ entries.count }}</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Average Time</h5>
-                <p class="card-text">{{ average_time }}</p>
-            </div>
-        </div>
-        <a href="{% url 'calculate-time' %}" class="d-block text-decoration-none card-link-wrapper">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">Calculate Work Time</h5>
-                </div>
-            </div>
-        </a>
-        <a href="{% url 'create-expenses' %}" class="d-block text-decoration-none card-link-wrapper">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">Salary Expenses</h5>
-                </div>
-            </div>
-        </a>
-        <a href="{% url 'leaves' %}" class="d-block text-decoration-none card-link-wrapper">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">Leaves</h5>
-                </div>
-            </div>
-        </a>
-        <a href="{% url 'create-task' %}" class="d-block text-decoration-none card-link-wrapper">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">Tasks</h5>
-                </div>
-            </div>
-        </a>
-    </div>
+      </div>
 
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                {% if target_met %}
-                    <h5 class="card-title text-success">Target Met</h5>
-                    <p class="card-text">The average work time meets the target.</p>
-                {% else %}
-                    <h5 class="card-title text-danger">Target Not Met</h5>
-                    <p class="card-text">The average work time does not meet the target.</p>
-                    <p class="card-text">You need to work an additional {{ time_needed }} per day to meet the average target of 8 hours and 40 minutes.</p>
-                {% endif %}
-            </div>
+      <!-- Mobile Navigation -->
+      <div class="mobile-nav" id="mobile-nav">
+        <div class="mobile-nav-content">
+          <a href="#" class="mobile-nav-link active">Dashboard</a>
+          <a href="#" class="mobile-nav-link" id="mobile-worklog">Worklog</a>
+          <a href="#" class="mobile-nav-link" id="mobile-upload"
+            >Upload Worklog</a
+          >
+          <a href="#" class="mobile-nav-link" id="mobile-expenses">Expenses</a>
+          <div class="mobile-nav-divider"></div>
+          <div class="mobile-user-info">
+            <i class="fas fa-user"></i>
+            <span id="mobile-username">john_doe</span>
+          </div>
+          <a href="#" class="mobile-nav-link" id="mobile-switch">
+            <span id="mobile-switch-text">Switch to Admin View</span>
+          </a>
+          <a href="#" class="mobile-nav-link logout">Logout</a>
         </div>
-    </div>
-</div>
-{% else %}
-<div class="dashboard-area mb-4">
-    <a href="{% url 'user-list' %}" class="d-block text-decoration-none card-link-wrapper">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Users</h5>
-                <p class="card-text">{{ total_users }}</p>
-            </div>
-        </div>
-    </a>
-    <a href="{% url 'worktime' %}" class="d-block text-decoration-none card-link-wrapper">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Worklogs</h5>
-                <p class="card-text">{{ total_worklogs }}</p>
-            </div>
-        </div>
-    </a>
-    <a href="{% url 'expenses' %}" class="d-block text-decoration-none card-link-wrapper">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Expenses</h5>
-                <p class="card-text">{{ total_expenses|currency_format }}</p>
-            </div>
-        </div>
-    </a>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Total Tasks</h5>
-            <p class="card-text">{{ total_tasks }}</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Total Leaves</h5>
-            <p class="card-text">{{ total_leaves }}</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Top 3 Recent Activity</h5>
-            <p class="card-text">
-                {% for u in top_3_recent_activity %}
-                    {{ u.user }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
-        </div>
-    </div>
-</div>
-{% endif %}
+      </div>
+    </nav>
 
-{% endblock %}
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <!-- User Dashboard -->
+        <div class="dashboard user-dashboard" id="user-dashboard">
+          <!-- Header -->
+          <div class="dashboard-header">
+            <div class="header-content">
+              <h1>My Dashboard</h1>
+              <p>Welcome back! Here's your work summary.</p>
+            </div>
+
+            <!-- Month Filter -->
+            <div class="filter-section">
+              <div class="filter-group">
+                <i class="far fa-calendar"></i>
+                <select class="filter-select" id="month-filter">
+                  <option value="december-2024">December 2024</option>
+                  <option value="november-2024">November 2024</option>
+                  <option value="october-2024">October 2024</option>
+                  <option value="september-2024">September 2024</option>
+                </select>
+                <button class="filter-btn">Filter</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Total Time This Month</h3>
+                <i class="far fa-clock stat-icon primary"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value primary">173h 45m</div>
+                <p class="stat-description">Across 20 working days</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Average Time Per Day</h3>
+                <i class="fas fa-chart-line stat-icon blue"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value blue">8h 41m</div>
+                <p class="stat-description">Daily average calculation</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Working Days</h3>
+                <i class="far fa-calendar-alt stat-icon orange"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value orange">20</div>
+                <p class="stat-description">Excluding weekends & holidays</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Target Status</h3>
+                <i class="fas fa-bullseye stat-icon green"></i>
+              </div>
+              <div class="stat-content">
+                <div class="badge badge-success">Met</div>
+                <p class="stat-description">8h 40m daily target</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="section-card">
+            <div class="section-header">
+              <h2>Quick Actions</h2>
+            </div>
+            <div class="actions-grid">
+              <button class="action-card">
+                <div class="action-icon blue">
+                  <i class="fas fa-calculator"></i>
+                </div>
+                <div class="action-content">
+                  <h4>Calculate Work Time</h4>
+                  <p>Calculate your total work hours</p>
+                </div>
+              </button>
+
+              <button class="action-card">
+                <div class="action-icon green">
+                  <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="action-content">
+                  <h4>Salary Expenses</h4>
+                  <p>View salary and expense reports</p>
+                </div>
+              </button>
+
+              <button class="action-card">
+                <div class="action-icon orange">
+                  <i class="fas fa-leaf"></i>
+                </div>
+                <div class="action-content">
+                  <h4>Leaves</h4>
+                  <p>Manage your leave requests</p>
+                </div>
+              </button>
+
+              <button class="action-card">
+                <div class="action-icon purple">
+                  <i class="fas fa-tasks"></i>
+                </div>
+                <div class="action-content">
+                  <h4>Tasks</h4>
+                  <p>View and manage your tasks</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Target Achievement -->
+          <div class="alert alert-success">
+            <div class="alert-content">
+              <i class="fas fa-check-circle"></i>
+              <div class="alert-text">
+                <h4>Target Met</h4>
+                <p>
+                  Great job! Your average work time meets the target of 8 hours
+                  and 40 minutes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div
+          class="dashboard admin-dashboard"
+          id="admin-dashboard"
+          style="display: none"
+        >
+          <!-- Header -->
+          <div class="dashboard-header">
+            <div class="header-content">
+              <h1>Admin Dashboard</h1>
+              <p>Overview of your organization's time tracking metrics.</p>
+            </div>
+            <div class="admin-badge">
+              <span class="badge badge-outline">Administrator View</span>
+            </div>
+          </div>
+
+          <!-- Admin Stats Grid -->
+          <div class="admin-stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Total Users</h3>
+                <i class="fas fa-users stat-icon blue"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value blue">156</div>
+                <p class="stat-description">Active employees</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Total Worklogs</h3>
+                <i class="far fa-clock stat-icon primary"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value primary">2,845</div>
+                <p class="stat-description">This month</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Total Expenses</h3>
+                <i class="fas fa-dollar-sign stat-icon green"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value green">$125,750</div>
+                <p class="stat-description">Current period</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Total Tasks</h3>
+                <i class="fas fa-tasks stat-icon purple"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value purple">489</div>
+                <p class="stat-description">All projects</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <h3>Total Leaves</h3>
+                <i class="fas fa-leaf stat-icon orange"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value orange">23</div>
+                <p class="stat-description">This month</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin Sections -->
+          <div class="admin-sections">
+            <!-- Recent Activity -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fas fa-chart-line"></i> Recent Activity</h2>
+              </div>
+              <div class="activity-list">
+                <div class="activity-item">
+                  <div class="activity-avatar">J</div>
+                  <div class="activity-content">
+                    <p class="activity-user">john_doe</p>
+                    <p class="activity-action">Submitted worklog</p>
+                  </div>
+                  <div class="activity-time">2 hours ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-avatar">J</div>
+                  <div class="activity-content">
+                    <p class="activity-user">jane_smith</p>
+                    <p class="activity-action">Applied for leave</p>
+                  </div>
+                  <div class="activity-time">4 hours ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-avatar">M</div>
+                  <div class="activity-content">
+                    <p class="activity-user">mike_wilson</p>
+                    <p class="activity-action">Completed task</p>
+                  </div>
+                  <div class="activity-time">6 hours ago</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top Active Users -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fas fa-users"></i> Top 3 Active Users</h2>
+              </div>
+              <div class="users-list">
+                <div class="user-item">
+                  <div class="user-rank">#1</div>
+                  <div class="user-avatar">S</div>
+                  <div class="user-content">
+                    <p class="user-name">sarah_johnson</p>
+                    <p class="user-status">Most active this week</p>
+                  </div>
+                  <div class="badge badge-success">Active</div>
+                </div>
+                <div class="user-item">
+                  <div class="user-rank">#2</div>
+                  <div class="user-avatar">D</div>
+                  <div class="user-content">
+                    <p class="user-name">david_brown</p>
+                    <p class="user-status">Most active this week</p>
+                  </div>
+                  <div class="badge badge-success">Active</div>
+                </div>
+                <div class="user-item">
+                  <div class="user-rank">#3</div>
+                  <div class="user-avatar">E</div>
+                  <div class="user-content">
+                    <p class="user-name">emily_davis</p>
+                    <p class="user-status">Most active this week</p>
+                  </div>
+                  <div class="badge badge-success">Active</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin Insights -->
+          <div class="insights-grid">
+            <div class="insight-card primary">
+              <div class="insight-header">
+                <h3>Productivity Insights</h3>
+              </div>
+              <div class="insight-content">
+                <p>• Average daily work time: <strong>8h 32m</strong></p>
+                <p>
+                  • Team productivity:
+                  <strong class="text-success">+12% this month</strong>
+                </p>
+                <p>• On-time project completion: <strong>89%</strong></p>
+              </div>
+            </div>
+
+            <div class="insight-card blue">
+              <div class="insight-header">
+                <h3>Quick Stats</h3>
+              </div>
+              <div class="insight-content">
+                <p>• Active projects: <strong>24</strong></p>
+                <p>• Pending approvals: <strong>7</strong></p>
+                <p>
+                  • System uptime: <strong class="text-success">99.9%</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // JavaScript for interactive functionality
+      let isAdmin = false;
+
+      // Toggle mobile menu
+      document
+        .getElementById("mobile-toggle")
+        .addEventListener("click", function () {
+          const mobileNav = document.getElementById("mobile-nav");
+          mobileNav.classList.toggle("active");
+        });
+
+      // Toggle user dropdown
+      document
+        .getElementById("user-dropdown")
+        .addEventListener("click", function (e) {
+          e.stopPropagation();
+          const dropdown = document.getElementById("dropdown-content");
+          dropdown.classList.toggle("show");
+        });
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", function () {
+        const dropdown = document.getElementById("dropdown-content");
+        dropdown.classList.remove("show");
+      });
+
+      // Switch between user and admin views
+      function switchView() {
+        isAdmin = !isAdmin;
+        const userDashboard = document.getElementById("user-dashboard");
+        const adminDashboard = document.getElementById("admin-dashboard");
+        const switchText = document.getElementById("switch-text");
+        const mobileSwitchText = document.getElementById("mobile-switch-text");
+        const username = document.getElementById("username");
+        const mobileUsername = document.getElementById("mobile-username");
+
+        // Show/hide navigation links for regular users
+        const userLinks = document.querySelectorAll(
+          "#worklog-link, #upload-link, #expenses-link, #mobile-worklog, #mobile-upload, #mobile-expenses",
+        );
+
+        if (isAdmin) {
+          userDashboard.style.display = "none";
+          adminDashboard.style.display = "block";
+          switchText.textContent = "Switch to User View";
+          mobileSwitchText.textContent = "Switch to User View";
+          username.textContent = "admin_user";
+          mobileUsername.textContent = "admin_user";
+          userLinks.forEach((link) => (link.style.display = "none"));
+        } else {
+          userDashboard.style.display = "block";
+          adminDashboard.style.display = "none";
+          switchText.textContent = "Switch to Admin View";
+          mobileSwitchText.textContent = "Switch to Admin View";
+          username.textContent = "john_doe";
+          mobileUsername.textContent = "john_doe";
+          userLinks.forEach((link) => (link.style.display = "block"));
+        }
+
+        // Close mobile menu
+        document.getElementById("mobile-nav").classList.remove("active");
+      }
+
+      // Add event listeners for switch view
+      document
+        .getElementById("switch-view")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          switchView();
+        });
+
+      document
+        .getElementById("mobile-switch")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          switchView();
+        });
+
+      // Add animation classes when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        const dashboard = document.querySelector(".dashboard");
+        dashboard.classList.add("fade-in");
+      });
+    </script>
+  </body>
+</html>
