@@ -1,41 +1,34 @@
 {% extends "navbar/base.html" %}
 {% load custom_filter %}
 
+{% block title %}Edit WorkLog{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-  <div class="text-center mb-4">
-    <h3>Edit WorkLog</h3>
-    <h4>Please update {{entry.user.get_full_name}} worklogs here!</h4>
-  </div>
-
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow-lg rounded-4">
-        <div class="card-header text-center text-white" style="background-color: rgb(3, 171, 180);">
-          <h4 class="mb-0">Update Worklogs</h4>
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Edit WorkLog</h2>
+            <p class="text-lg text-gray-600">Please update {{ entry.user.get_full_name }}'s worklogs here!</p>
         </div>
-        <div class="card-body">
-          <form method="post" class="work-time-form">
-            {% csrf_token %}
-
-            {% for field in form %}
-              <div class="mb-3">
-                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                {{ field|add_class:"form-control" }}
-                {% if field.errors %}
-                  <div class="text-danger small mt-1">{{ field.errors }}</div>
-                {% endif %}
-              </div>
-            {% endfor %}
-
-            <div class="form-actions">
-              <a href="{% url 'worktime' %}" class="back-btn">← Back</a>
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
-          </form>
+        <div class="form-container max-w-lg mx-auto glass-card">
+            <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Update Worklogs</h4>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field|add_class:"form-control" }}
+                        {% if field.errors %}
+                            <div class="form-error">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="flex justify-between items-center mt-6">
+                    <a href="{% url 'worktime' %}" class="btn-secondary">← Back</a>
+                    <button type="submit" class="btn-primary">Submit</button>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
-</div>
+</section>
 {% endblock %}

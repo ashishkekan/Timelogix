@@ -1,44 +1,32 @@
 {% extends "navbar/base.html" %}
 {% load custom_filter %}
 
+{% block title %}Upload Time Logs{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-  <div class="text-center mb-4">
-    <h2 class="fw-bold">Upload Time Logs</h2>
-    <h5 class="text-muted">Please upload your time logs here!</h5>
-  </div>
-
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow rounded-4">
-        <div class="card-header text-center text-white" style="background-color: rgb(3, 171, 180);">
-          <h5 class="mb-0">Upload Excel File</h5>
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Upload Time Logs</h2>
+            <p class="text-lg text-gray-600">Please upload your time logs here!</p>
         </div>
-
-        <div class="card-body">
-          <form method="post" enctype="multipart/form-data" class="upload-form">
-            {% csrf_token %}
-
-            <div class="mb-3">
-              <label for="{{ form.excel_file.id_for_label }}" class="form-label">
-                {{ form.excel_file.label }}
-              </label>
-              {{ form.excel_file|add_class:"form-control" }}
-              {% if form.excel_file.errors %}
-                <div class="text-danger small mt-1">{{ form.excel_file.errors }}</div>
-              {% endif %}
-            </div>
-
-            <div class="form-actions">
-              <a href="{% url 'export-template' %}" class="btn btn-secondary me-2 mt-2">
-                Export Template
-              </a>
-              <button type="submit" class="btn btn-success mt-2 px-4">Submit</button>
-            </div>
-          </form>
+        <div class="form-container max-w-lg mx-auto glass-card">
+            <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Upload Excel File</h4>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ form.excel_file.id_for_label }}">{{ form.excel_file.label }}</label>
+                    {{ form.excel_file|add_class:"form-control" }}
+                    {% if form.excel_file.errors %}
+                        <div class="form-error">{{ form.excel_file.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="flex justify-between items-center mt-6">
+                    <a href="{% url 'export-template' %}" class="btn-secondary">Export Template</a>
+                    <button type="submit" class="btn-success">Submit</button>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
-</div>
+</section>
 {% endblock %}

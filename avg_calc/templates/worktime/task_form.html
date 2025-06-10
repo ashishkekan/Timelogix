@@ -1,44 +1,34 @@
 {% extends "navbar/base.html" %}
 {% load custom_filter %}
 
+{% block title %}Add Task{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-  <div class="text-center mb-4">
-    <h2 class="fw-bold">Add Task</h2>
-    <h5 class="text-muted">Please add your task details here!</h5>
-  </div>
-
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow rounded-4">
-        <div class="card-header text-center text-white" style="background-color: rgb(3, 171, 180);">
-          <h5 class="mb-0">Add Task Form</h5>
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Add Task</h2>
+            <p class="text-lg text-gray-600">Please add your task details here!</p>
         </div>
-
-        <div class="card-body">
-          <form method="post">
-            {% csrf_token %}
-
-            {% for field in form %}
-              <div class="mb-3">
-                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-                {{ field|add_class:"form-control" }}
-                {% if field.errors %}
-                  <div class="text-danger small mt-1">{{ field.errors }}</div>
-                {% endif %}
-              </div>
-            {% endfor %}
-
-            <div class="form-actions">
-              <a href="{% url 'dashboard' %}" class="btn btn-secondary me-2 mt-2">
-                ← Back
-              </a>
-              <button type="submit" class="btn btn-success mt-2 px-4">Save</button>
-            </div>
-          </form>
+        <div class="form-container max-w-lg mx-auto glass-card">
+            <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Add Task Form</h4>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field|add_class:"form-control" }}
+                        {% if field.errors %}
+                            <div class="form-error">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="flex justify-between items-center mt-6">
+                    <a href="{% url 'dashboard' %}" class="btn-secondary">← Back</a>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
-</div>
+</section>
 {% endblock %}

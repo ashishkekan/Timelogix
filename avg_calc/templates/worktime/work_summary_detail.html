@@ -1,60 +1,38 @@
 {% extends "navbar/base.html" %}
 {% load static %}
+
+{% block title %}Work Summary{% endblock %}
+
 {% block content %}
-
-<style>
-    .dashboard-area {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-
-    .card {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background-color: #fff;
-    }
-
-    .card-body {
-        padding: 16px;
-    }
-
-    .card-title {
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    .card-text {
-        font-size: 16px;
-    }
-</style>
-
-<h2>Work Summary</h2>
-<h3>Hi, {{ request.user.username }}</h3>
-<div class="dashboard-area">
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Date</h5>
-            <p class="card-text">{{ summary.date }}</p>
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Work Summary</h2>
+            <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="stat-card">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-gray-500 font-medium text-sm uppercase">Date</h4>
+                    <i class="fas fa-calendar-alt text-purple-500 text-lg"></i>
+                </div>
+                <p class="text-xl font-bold text-gray-900">{{ summary.date }}</p>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-gray-500 font-medium text-sm uppercase">Average Work Time</h4>
+                    <i class="fas fa-clock text-indigo-500 text-lg"></i>
+                </div>
+                <p class="text-xl font-bold text-gray-900">{{ summary.average_work_time }}</p>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-gray-500 font-medium text-sm uppercase">Additional Time Needed</h4>
+                    <i class="fas fa-chart-line text-teal-500 text-lg"></i>
+                </div>
+                <p class="text-xl font-bold text-gray-900">{{ summary.additional_time_needed }}</p>
+            </div>
         </div>
     </div>
-
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Average Work Time</h5>
-            <p class="card-text">{{ summary.average_work_time }}</p>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Additional Time Needed</h5>
-            <p class="card-text">{{ summary.additional_time_needed }}</p>
-        </div>
-    </div>
-</div>
-
+</section>
 {% endblock %}

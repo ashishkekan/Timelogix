@@ -1,40 +1,32 @@
 {% extends "navbar/base.html" %}
 {% load custom_filter %}
 
-<div class="text-center">
-  <h2>Login</h2>
-</div>
+{% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header text-center text-white" style="background-color: rgb(3, 171, 180);">
-          <h2>Login</h2>
-        </div>
-        <div class="card-body">
-          <form method="post">
-            {% csrf_token %}
-
-            {% for field in form %}
-              <div class="form-group">
-                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-                {{ field|add_class:"form-control" }}
-                {% if field.errors %}
-                  <div class="text-danger">{{ field.errors }}</div>
-                {% endif %}
-              </div>
-            {% endfor %}
-
-            <div class="text-center">
-              <button type="submit" class="btn btn-primary">Login</button>
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="form-container max-w-md mx-auto">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h2>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field|add_class:"form-control" }}
+                        {% if field.errors %}
+                            <div class="form-error">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="text-center">
+                    <button type="submit" class="btn-primary w-full">Login</button>
+                </div>
+            </form>
+            <div class="form-footer mt-4">
+                <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
             </div>
-            <p class="text-center">Don't have an Account?<a href="{% url 'register' %}"> Register</a></p>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
-</div>
+</section>
 {% endblock %}
