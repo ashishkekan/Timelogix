@@ -1,140 +1,268 @@
 {% extends "navbar/base.html" %}
 {% load static %}
 {% load custom_filter %}
+
+{% block extra_head %}
+<style>
+    /* Remove inline styles since they're now in style.css */
+</style>
+{% endblock %}
+
 {% block content %}
-
-<h2>My Dashboard</h2>
-<h3>Hi, {{ request.user.username }}</h3>
-{% if not request.user.is_staff %}
-    <form method="get" class="custom-form">
-        <div class="form-group">
-            <div class="dropdown">
-                {{ month_form.month }}
-            </div>
-        </div>
-        <button class="btn btn-primary" type="submit">Filter</button>
-    </form>
-
-    <div class="dashboard-area mb-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Time In This Month</h5>
-                <p class="card-text">{{ total_work_time }}</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Average Time Per Day</h5>
-                <p class="card-text">{{ time_needed }}</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">No. of Days in the Month</h5>
-                <p class="card-text">{{ entries.count }}</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Average Time</h5>
-                <p class="card-text">{{ average_time }}</p>
-            </div>
-        </div>
-        <a href="{% url 'calculate-time' %}" class="d-block text-decoration-none card-link-wrapper">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">Calculate Work Time</h5>
-                </div>
-            </div>
-        </a>
-        <a href="{% url 'create-expenses' %}" class="d-block text-decoration-none card-link-wrapper">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">Salary Expenses</h5>
-                </div>
-            </div>
-        </a>
-        <a href="{% url 'leaves' %}" class="d-block text-decoration-none card-link-wrapper">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">Leaves</h5>
-                </div>
-            </div>
-        </a>
-        <a href="{% url 'create-task' %}" class="d-block text-decoration-none card-link-wrapper">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">Tasks</h5>
-                </div>
-            </div>
-        </a>
-    </div>
-
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                {% if target_met %}
-                    <h5 class="card-title text-success">Target Met</h5>
-                    <p class="card-text">The average work time meets the target.</p>
-                {% else %}
-                    <h5 class="card-title text-danger">Target Not Met</h5>
-                    <p class="card-text">The average work time does not meet the target.</p>
-                    <p class="card-text">You need to work an additional {{ time_needed }} per day to meet the average target of 8 hours and 40 minutes.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-{% else %}
-<div class="dashboard-area mb-4">
-    <a href="{% url 'user-list' %}" class="d-block text-decoration-none card-link-wrapper">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Users</h5>
-                <p class="card-text">{{ total_users }}</p>
-            </div>
-        </div>
-    </a>
-    <a href="{% url 'worktime' %}" class="d-block text-decoration-none card-link-wrapper">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Worklogs</h5>
-                <p class="card-text">{{ total_worklogs }}</p>
-            </div>
-        </div>
-    </a>
-    <a href="{% url 'expenses' %}" class="d-block text-decoration-none card-link-wrapper">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Expenses</h5>
-                <p class="card-text">{{ total_expenses|currency_format }}</p>
-            </div>
-        </div>
-    </a>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Total Tasks</h5>
-            <p class="card-text">{{ total_tasks }}</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Total Leaves</h5>
-            <p class="card-text">{{ total_leaves }}</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Top 3 Recent Activity</h5>
-            <p class="card-text">
-                {% for u in top_3_recent_activity %}
-                    {{ u.user }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
+<div class="container">
+    <!-- Employee Dashboard -->
+    <div id="employee-dashboard">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">My Dashboard</h1>
+            <p class="page-description">
+                Hi, <span class="welcome-text">{{ request.user.username }}</span> - Track your time, monitor progress, and achieve your goals.
             </p>
         </div>
+
+        {% if not request.user.is_staff %}
+        <!-- Month Filter -->
+        <div class="filter-section">
+            <label class="filter-label">
+                <i class="fas fa-calendar-alt"></i>
+                Filter by Month:
+            </label>
+            <form method="get" class="flex items-center gap-4">
+                <div class="relative">
+                    {{ month_form.month }}
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter"></i>
+                    Filter
+                </button>
+            </form>
+        </div>
+
+        <!-- Main Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            <div class="card">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Total Time This Month</span>
+                        <i class="fas fa-clock stat-icon"></i>
+                    </div>
+                    <div class="stat-value">{{ total_work_time }}</div>
+                    <div class="stat-subtitle">Total logged hours</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Average Time Per Day</span>
+                        <i class="fas fa-chart-line stat-icon"></i>
+                    </div>
+                    <div class="stat-value">{{ time_needed }}</div>
+                    <div class="stat-subtitle">Daily average</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Days Worked</span>
+                        <i class="fas fa-calendar-check stat-icon"></i>
+                    </div>
+                    <div class="stat-value">{{ entries.count }}</div>
+                    <div class="stat-subtitle">Days in this month</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Average Time</span>
+                        <i class="fas fa-bullseye stat-icon"></i>
+                    </div>
+                    <div class="stat-value">{{ average_time }}</div>
+                    <div class="stat-subtitle">Average per day</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            <div class="card">
+                <a href="{% url 'calculate-time' %}" class="quick-action">
+                    <div class="action-content">
+                        <div class="action-icon blue">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="action-text">
+                            <h3>Calculate Work Time</h3>
+                            <p>Calculate your hours</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="card">
+                <a href="{% url 'create-expenses' %}" class="quick-action">
+                    <div class="action-content">
+                        <div class="action-icon green">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="action-text">
+                            <h3>Salary Expenses</h3>
+                            <p>View expenses</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="card">
+                <a href="{% url 'leaves' %}" class="quick-action">
+                    <div class="action-content">
+                        <div class="action-icon yellow">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <div class="action-text">
+                            <h3>Control Leaves</h3>
+                            <p>Manage leave requests</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="card">
+                <a href="{% url 'create-task' %}" class="quick-action">
+                    <div class="action-content">
+                        <div class="action-icon purple">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="action-text">
+                            <h3>Manage Tasks</h3>
+                            <p>View and create tasks</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Target Status -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-bullseye"></i>
+                    Target Status
+                </h3>
+            </div>
+            <div class="card-content">
+                <div class="target-status {% if target_met %}target-met{% else %}target-not-met{% endif %}" id="targetStatus">
+                    <div class="target-content">
+                        <div class="target-icon {% if target_met %}success{% else %}warning{% endif %}" id="targetIcon">
+                            <i class="fas {% if target_met %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                        </div>
+                        <div class="target-text">
+                            <h3 id="targetTitle" style="color: {% if target_met %}#065f46{% else %}#991b1b{% endif %}">
+                                {% if target_met %}🎉 Target Met!{% else %}Target Not Met{% endif %}
+                            </h3>
+                            <p id="targetDescription" style="color: {% if target_met %}#047857{% else %}#dc2626{% endif %}">
+                                {% if target_met %}
+                                    Excellent work! The average work time meets the target. Keep up the great performance!
+                                {% else %}
+                                    The average work time does not meet the target. You need to work an additional <strong>{{ time_needed }}</strong> per day to meet the average target of 8 hours and 40 minutes.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Admin Dashboard -->
+        <div id="admin-dashboard">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Admin Dashboard</h1>
+                <p class="page-description">
+                    Hi, <span class="welcome-text">{{ request.user.username }}</span> - Monitor system performance and user activity.
+                </p>
+            </div>
+
+            <div class="admin-grid mb-8">
+                <div class="quick-stat">
+                    <div class="quick-stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="quick-stat-value">{{ total_users }}</div>
+                    <div class="quick-stat-label">Total Users</div>
+                </div>
+
+                <div class="quick-stat">
+                    <div class="quick-stat-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="quick-stat-value">{{ total_worklogs }}</div>
+                    <div class="quick-stat-label">Total Worklogs</div>
+                </div>
+
+                <div class="quick-stat">
+                    <div class="quick-stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="quick-stat-value">{{ total_expenses|currency_format }}</div>
+                    <div class="quick-stat-label">Total Expenses</div>
+                </div>
+
+                <div class="quick-stat">
+                    <div class="quick-stat-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="quick-stat-value">{{ total_tasks }}</div>
+                    <div class="quick-stat-label">Total Tasks</div>
+                </div>
+
+                <div class="quick-stat">
+                    <div class="quick-stat-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <div class="quick-stat-value">{{ total_leaves }}</div>
+                    <div class="quick-stat-label">Total Leaves</div>
+                </div>
+
+                <div class="quick-stat">
+                    <div class="quick-stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="quick-stat-value">
+                        {% for u in top_3_recent_activity %}
+                            {{ u.user }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="quick-stat-label">Top 3 Recent Activity</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
-{% endif %}
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('floating');
+                }
+            });
+        }, { threshold: 0.2 });
+
+        cards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+    });
+</script>
 {% endblock %}

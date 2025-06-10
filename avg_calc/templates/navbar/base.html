@@ -6,67 +6,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}TimeLogs{% endblock %}</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    {% block extra_head %}{% endblock %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="{% url 'dashboard' %}">TimeLogs</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-              {% if user.is_authenticated %}
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard' %}"><b>Dashboard</b></a>
-                    </li>
-                    {% if not user.is_staff %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'worktime' %}"><b>Worklog</b></a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'import-timelogs' %}"><b>Upload Worklog</b></a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'expenses' %}"><b>Expenses</b></a>
-                      </li>
+        <nav class="navbar">
+            <div class="navbar-container">
+                <!-- Logo -->
+                <a href="{% url 'dashboard' %}" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <span class="logo-text">TimeLogs</span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="nav-links">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        {% if not user.is_staff %}
+                            <a href="{% url 'worktime' %}" class="nav-link {% if request.resolver_match.url_name == 'worktime' %}active{% endif %}">
+                                <i class="fas fa-clock"></i>
+                                <span>Worklog</span>
+                            </a>
+                            <a href="{% url 'import-timelogs' %}" class="nav-link {% if request.resolver_match.url_name == 'import-timelogs' %}active{% endif %}">
+                                <i class="fas fa-upload"></i>
+                                <span>Upload Worklog</span>
+                            </a>
+                            <a href="{% url 'expenses' %}" class="nav-link {% if request.resolver_match.url_name == 'expenses' %}active{% endif %}">
+                                <i class="fas fa-receipt"></i>
+                                <span>Expenses</span>
+                            </a>
+                        {% endif %}
                     {% endif %}
-                </ul>
-              {% endif %}
-              <ul class="navbar-nav">
-                  {% if user.is_authenticated %}
-                      <li class="nav-item dropdown">
-                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              <b>{{ user.username }}</b>
-                          </a>
-                          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
-                              <form method="post" action="{% url 'logout' %}">
-                                  {% csrf_token %}
-                                  <button type="submit" class="dropdown-item">Logout</button>
-                              </form>
-                          </div>
-                      </li>
-                  {% else %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'login' %}">Login</a>
-                      </li>
-                  {% endif %}
-              </ul>
+                </div>
+
+                <!-- User Menu -->
+                <div class="user-menu">
+                    {% if user.is_authenticated %}
+                        <button class="user-button" onclick="toggleUserDropdown()">
+                            <i class="fas fa-user-circle"></i>
+                            <strong>{{ user.username }}</strong>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="{% url 'profile' %}" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Profile
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn-primary">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div class="mobile-nav">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    {% if not user.is_staff %}
+                        <a href="{% url 'worktime' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'worktime' %}active{% endif %}">
+                            <i class="fas fa-clock"></i>
+                            <span>Worklog</span>
+                        </a>
+                        <a href="{% url 'import-timelogs' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'import-timelogs' %}active{% endif %}">
+                            <i class="fas fa-upload"></i>
+                            <span>Upload</span>
+                        </a>
+                        <a href="{% url 'expenses' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'expenses' %}active{% endif %}">
+                            <i class="fas fa-receipt"></i>
+                            <span>Expenses</span>
+                        </a>
+                    {% endif %}
+                {% endif %}
             </div>
         </nav>
     </header>
-    <main class="container mt-4">
+    <main class="container">
         {% block content %}
         {% endblock %}
     </main>
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">&copy; 2025 TimeLogs. All rights reserved.</p>
+        </div>
+    </footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && !userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animation = 'fadeIn 0.6s ease forwards';
+            });
+        });
+    </script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
