@@ -290,9 +290,13 @@ def dashboard(request):
     top_3_recent_activity = RecentActivity.objects.order_by("-timestamp")[:3]
     context = {
         "month_form": month_form,
-        "entries": entries,
-        "total_work_time": format_duration(total_work_seconds),
-        "average_work_time": format_duration(average_work_seconds),
+        "entries": entries if entries else 0,
+        "total_work_time": (
+            format_duration(total_work_seconds) if total_work_seconds else 0
+        ),
+        "average_work_time": (
+            format_duration(average_work_seconds) if average_work_seconds else 0
+        ),
         "target_met": (
             average_time >= TARGET_WORK_TIME.total_seconds()
             if working_days_count

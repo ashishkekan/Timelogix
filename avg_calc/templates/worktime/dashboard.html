@@ -47,7 +47,7 @@
                     <h4 class="text-gray-500 font-medium text-sm uppercase">Average Time Per Day</h4>
                     <i class="fas fa-chart-line text-teal-500 text-lg"></i>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">{{ time_needed|default:"8h 41m" }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ time_needed }}</p>
                 <p class="text-gray-600 text-sm mt-2">Daily average calculation</p>
             </div>
 
@@ -56,7 +56,7 @@
                     <h4 class="text-gray-500 font-medium text-sm uppercase">Working Days</h4>
                     <i class="fas fa-calendar-alt text-purple-500 text-lg"></i>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">{{ entries.count|default:20 }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ entries.count}}</p>
                 <p class="text-gray-600 text-sm mt-2">Excluding weekends & holidays</p>
             </div>
 
