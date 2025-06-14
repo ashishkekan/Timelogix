@@ -50,16 +50,16 @@
 {% endblock %}
 
 {% block content %}
-<section class="py-12">
+<section class="py-0">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <!-- Header -->
         <div class="mb-12">
             <div class="flex justify-between items-center flex-col sm:flex-row">
+                {% if not user.is_staff %}
                 <div class="text-center sm:text-left mb-4 sm:mb-0">
                     <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 tracking-tight">My Dashboard</h2>
                     <p class="text-lg text-gray-600">Welcome back, {{ user.username }}!</p>
                 </div>
-                {% if not user.is_staff %}
                 <div class="dashboard-preview p-4">
                     <form method="get" class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
                         <div class="relative w-full sm:w-64">
@@ -81,8 +81,8 @@
                         <h4 class="text-gray-500 font-medium text-sm uppercase">Total Time This Month</h4>
                         <i class="fas fa-clock text-indigo-500 text-lg"></i>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ total_work_time|default:"173h 45m" }}</p>
-                    <p class="text-gray-600 text-sm mt-2">Across {{ entries.count|default:20 }} working days</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_work_time }}</p>
+                    <p class="text-gray-600 text-sm mt-2">Across {{ entries.count }} working days</p>
                 </div>
 
                 <div class="stat-card">
@@ -114,8 +114,6 @@
                     <p class="text-gray-600 text-sm mt-2">8h 40m daily target</p>
                 </div>
             </div>
-
-            <!-- Quick Actions -->
             <div class="glass-card p-6 mb-12">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -145,8 +143,6 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Target Achievement -->
             <div class="glass-card p-6">
                 {% if target_met %}
                     <div class="flex items-center space-x-3">
@@ -168,25 +164,21 @@
             </div>
         </div>
 
-        <!-- Admin Dashboard -->
         <div class="admin-dashboard {% if not user.is_staff %}hidden{% endif %}">
-            <!-- Header -->
             <div class="flex justify-between items-center mb-12 flex-col sm:flex-row">
                 <div class="text-center sm:text-left mb-4 sm:mb-0">
-                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 tracking-tight">Admin Dashboard</h2>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 tracking-tight">Dashboard</h2>
                     <p class="text-lg text-gray-600">Overview of your organization's time tracking metrics.</p>
                 </div>
-                <span class="badge badge-outline">Administrator View</span>
             </div>
 
-            <!-- Admin Stats Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 <a href="{% url 'user-list' %}" class="stat-card text-decoration-none">
                     <div class="flex items-center justify-between mb-4">
                         <h4 class="text-gray-500 font-medium text-sm uppercase">Total Users</h4>
                         <i class="fas fa-users text-indigo-600 text-lg"></i>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ total_users|default:156 }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_users }}</p>
                     <p class="text-gray-600 text-sm mt-2">Active employees</p>
                 </a>
 
@@ -195,7 +187,7 @@
                         <h4 class="text-gray-500 font-medium text-sm uppercase">Total Worklogs</h4>
                         <i class="fas fa-clipboard-list text-teal-600 text-lg"></i>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ total_worklogs|default:2845 }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_worklogs }}</p>
                     <p class="text-gray-600 text-sm mt-2">This month</p>
                 </a>
 
@@ -204,7 +196,7 @@
                         <h4 class="text-gray-500 font-medium text-sm uppercase">Total Expenses</h4>
                         <i class="fas fa-dollar-sign text-purple-600 text-lg"></i>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ total_expenses|currency_format|default:"$125,750" }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_expenses|currency_format }}</p>
                     <p class="text-gray-600 text-sm mt-2">Current period</p>
                 </a>
 
@@ -213,7 +205,7 @@
                         <h4 class="text-gray-500 font-medium text-sm uppercase">Total Tasks</h4>
                         <i class="fas fa-tasks text-blue-600 text-lg"></i>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ total_tasks|default:489 }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_tasks }}</p>
                     <p class="text-gray-600 text-sm mt-2">All projects</p>
                 </div>
 
@@ -222,14 +214,12 @@
                         <h4 class="text-gray-500 font-medium text-sm uppercase">Total Leaves</h4>
                         <i class="fas fa-leaf text-indigo-600 text-lg"></i>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ total_leaves|default:23 }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_leaves }}</p>
                     <p class="text-gray-600 text-sm mt-2">This month</p>
                 </div>
             </div>
 
-            <!-- Admin Sections -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-                <!-- Recent Activity -->
                 <div class="glass-card p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4"><i class="fas fa-chart-line mr-2"></i>Recent Activity</h3>
                     <div class="activity-list">
@@ -238,40 +228,14 @@
                                 <div class="activity-avatar">{{ activity.user.username|first|upper }}</div>
                                 <div class="activity-content flex-1">
                                     <p class="text-gray-900 font-medium text-sm">{{ activity.user.username }}</p>
-                                    <p class="text-gray-600 text-sm">{{ activity.action|default:"Performed an action" }}</p>
+                                    <p class="text-gray-600 text-sm">{{ activity.description }}</p>
                                 </div>
-                                <div class="text-gray-500 text-sm">{{ activity.time|default:"Recent" }}</div>
-                            </div>
-                        {% empty %}
-                            <div class="activity-item">
-                                <div class="activity-avatar">J</div>
-                                <div class="activity-content flex-1">
-                                    <p class="text-gray-900 font-medium text-sm">john_doe</p>
-                                    <p class="text-gray-600 text-sm">Submitted worklog</p>
-                                </div>
-                                <div class="text-gray-500 text-sm">2 hours ago</div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-avatar">J</div>
-                                <div class="activity-content flex-1">
-                                    <p class="text-gray-900 font-medium text-sm">jane_smith</p>
-                                    <p class="text-gray-600 text-sm">Applied for leave</p>
-                                </div>
-                                <div class="text-gray-500 text-sm">4 hours ago</div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-avatar">M</div>
-                                <div class="activity-content flex-1">
-                                    <p class="text-gray-900 font-medium text-sm">mike_wilson</p>
-                                    <p class="text-gray-600 text-sm">Completed task</p>
-                                </div>
-                                <div class="text-gray-500 text-sm">6 hours ago</div>
+                                <div class="text-gray-500 text-sm">{{ activity.timestamp|default:"Recent" }}</div>
                             </div>
                         {% endfor %}
                     </div>
                 </div>
 
-                <!-- Top Active Users -->
                 <div class="glass-card p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4"><i class="fas fa-users mr-2"></i>Top 3 Active Users</h3>
                     <div class="users-list">
@@ -285,55 +249,7 @@
                                 </div>
                                 <span class="badge">Active</span>
                             </div>
-                        {% empty %}
-                            <div class="user-item">
-                                <div class="user-rank">#1</div>
-                                <div class="user-avatar">S</div>
-                                <div class="user-content flex-1">
-                                    <p class="text-gray-900 font-medium text-sm">sarah_johnson</p>
-                                    <p class="text-gray-600 text-sm">Most active this week</p>
-                                </div>
-                                <span class="badge">Active</span>
-                            </div>
-                            <div class="user-item">
-                                <div class="user-rank">#2</div>
-                                <div class="user-avatar">D</div>
-                                <div class="user-content flex-1">
-                                    <p class="text-gray-900 font-medium text-sm">david_brown</p>
-                                    <p class="text-gray-600 text-sm">Most active this week</p>
-                                </div>
-                                <span class="badge">Active</span>
-                            </div>
-                            <div class="user-item">
-                                <div class="user-rank">#3</div>
-                                <div class="user-avatar">E</div>
-                                <div class="user-content flex-1">
-                                    <p class="text-gray-900 font-medium text-sm">emily_davis</p>
-                                    <p class="text-gray-600 text-sm">Most active this week</p>
-                                </div>
-                                <span class="badge">Active</span>
-                            </div>
                         {% endfor %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Insights -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div class="glass-card p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Productivity Insights</h3>
-                    <div class="text-gray-600 text-sm">
-                        <p>• Average daily work time: <span class="font-semibold">{{ average_time|default:"8h 32m" }}</span></p>
-                        <p>• Team productivity: <span class="text-teal-500 font-semibold">+3h</span></p>
-                        <p>• On-time project completion: <span class="font-semibold">89%</span></p>
-                    </div>
-                </div>
-                <div class="glass-card p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Quick Stats</h3>
-                    <div class="text-gray-600 text-sm">
-                        <p>• Active projects: <span class="font-semibold">24</span></p>
-                        <p>• Pending tasks</p>
-                        <p>• System uptime: <span class="text-teal-500 font-semibold">500</span></p>
                     </div>
                 </div>
             </div>
