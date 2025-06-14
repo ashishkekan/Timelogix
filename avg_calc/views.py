@@ -13,6 +13,7 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils.timezone import is_naive, localtime, make_aware
 from xhtml2pdf import pisa
 
@@ -309,6 +310,33 @@ def dashboard(request):
         "total_leaves": total_leaves,
         "top_3_recent_activity": top_3_recent_activity,
     }
+    context["quick_actions"] = [
+        {
+            "url": reverse("calculate-time"),
+            "title": "Calculate Work Time",
+            "icon": "fas fa-calculator",
+            "icon_color": "text-indigo-500",
+        },
+        {
+            "url": reverse("create-expenses"),
+            "title": "Salary Expenses",
+            "icon": "fas fa-dollar-sign",
+            "icon_color": "text-teal-500",
+        },
+        {
+            "url": reverse("leaves"),
+            "title": "Leaves",
+            "icon": "fas fa-leaf",
+            "icon_color": "text-purple-500",
+        },
+        {
+            "url": reverse("create-task"),
+            "title": "Tasks",
+            "icon": "fas fa-tasks",
+            "icon_color": "text-blue-500",
+        },
+    ]
+
     return render(request, "worktime/dashboard.html", context)
 
 

@@ -117,30 +117,14 @@
             <div class="glass-card p-6 mb-12">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <a href="{% url 'calculate-time' %}" class="stat-card text-decoration-none">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-gray-900 font-semibold text-sm uppercase">Calculate Work Time</h4>
-                            <i class="fas fa-calculator text-indigo-500 text-lg"></i>
-                        </div>
-                    </a>
-                    <a href="{% url 'create-expenses' %}" class="stat-card text-decoration-none">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-gray-900 font-semibold text-sm uppercase">Salary Expenses</h4>
-                            <i class="fas fa-dollar-sign text-teal-500 text-lg"></i>
-                        </div>
-                    </a>
-                    <a href="{% url 'leaves' %}" class="stat-card text-decoration-none">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-gray-900 font-semibold text-sm uppercase">Leaves</h4>
-                            <i class="fas fa-leaf text-purple-500 text-lg"></i>
-                        </div>
-                    </a>
-                    <a href="{% url 'create-task' %}" class="stat-card text-decoration-none">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-gray-900 font-semibold text-sm uppercase">Tasks</h4>
-                            <i class="fas fa-tasks text-blue-500 text-lg"></i>
-                        </div>
-                    </a>
+                    {% for action in quick_actions %}
+                        <a href="{{ action.url }}" class="stat-card text-decoration-none">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-gray-900 font-semibold text-sm uppercase">{{ action.title }}</h4>
+                                <i class="{{ action.icon }} text-lg {{ action.icon_color }}"></i>
+                            </div>
+                        </a>
+                    {% endfor %}
                 </div>
             </div>
             <div class="glass-card p-6">
