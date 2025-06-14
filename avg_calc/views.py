@@ -698,11 +698,9 @@ def delete_user(request, user_id):
 def export_worklog(request):
     today = datetime.now().date()
 
-    # Get selected month from query params, default to current month
     selected_month = int(request.GET.get("month", today.month))
-    selected_year = today.year  # Use current year
+    selected_year = today.year
 
-    # Compute first and last day of the selected month
     start_of_month = datetime(selected_year, selected_month, 1).date()
     if selected_month == 12:
         end_of_month = datetime(selected_year + 1, 1, 1).date() - timedelta(days=1)
@@ -711,10 +709,34 @@ def export_worklog(request):
             selected_year, selected_month + 1, 1
         ).date() - timedelta(days=1)
 
-    # Filter logs
     work_logs = WorkTimeEntry.objects.filter(
         user=request.user, date__range=[start_of_month, end_of_month]
     ).order_by("date")
+
+    # Initialize totals
+    total_work_time = timedelta()
+    total_lunch_time = timedelta()
+    half_days = 0
+
+    for log in work_logs:
+        # Work time
+        if log.total_work_time:
+            total_work_time += log.total_work_time
+
+        # Lunch time (break duration)
+        break_start = datetime.combine(log.date, log.breakout_time)
+        break_end = datetime.combine(log.date, log.breakin_time)
+        lunch_duration = break_end - break_start
+        total_lunch_time += lunch_duration
+
+        # Half day condition: less than 6 hours 30 minutes
+        if log.total_work_time and log.total_work_time < timedelta(hours=6, minutes=30):
+            half_days += 1
+
+    present_days = work_logs.count()
+    average_work_time = (
+        total_work_time / present_days if present_days > 0 else timedelta()
+    )
 
     # Generate PDF
     template = get_template("worktime/worklog_pdf.html")
@@ -724,6 +746,11 @@ def export_worklog(request):
             "work_logs": work_logs,
             "month": start_of_month.strftime("%B"),
             "year": selected_year,
+            "total_work_time": total_work_time,
+            "total_lunch_time": total_lunch_time,
+            "present_days": present_days,
+            "average_work_time": average_work_time,
+            "half_days": half_days,
         }
     )
 
@@ -731,7 +758,6 @@ def export_worklog(request):
     response["Content-Disposition"] = (
         f'attachment; filename="worklog_{selected_month}_{selected_year}.pdf"'
     )
-
     pisa_status = pisa.CreatePDF(html, dest=response)
     if pisa_status.err:
         return HttpResponse("Error creating PDF", status=500)

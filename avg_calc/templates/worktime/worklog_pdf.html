@@ -1,3 +1,4 @@
+{% load custom_filter %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,6 +36,32 @@
                 <tr><td colspan="6">No work logs found.</td></tr>
             {% endfor %}
         </tbody>
+    </table>
+    <hr style="margin-top: 40px;">
+
+    <h3 style="color: #2c3e50; font-size: 18px; margin-top: 30px;">Summary Report</h3>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <tr>
+            <td><strong style="color: #1abc9c;">Net Present Days:</strong></td>
+            <td>{{ present_days }}</td>
+        </tr>
+        <tr>
+            <td><strong style="color: #3498db;">Total Work Hrs:</strong></td>
+            <td>{{ total_work_time|hours_minutes }}</td>
+        </tr>
+        <tr>
+            <td><strong style="color: #f39c12;">Total Lunch Hrs:</strong></td>
+            <td>{{ total_lunch_time|hours_minutes }}</td>
+        </tr>
+        <tr>
+            <td><strong style="color: #8e44ad;">Average Work Hrs:</strong></td>
+            <td>{{ average_work_time|hours_minutes }}</td>
+        </tr>
+        <tr>
+            <td><strong style="color: #e74c3c;">Half Days (&lt; 6h 30m):</strong></td>
+            <td>{{ half_days }}</td>
+        </tr>
     </table>
 </body>
 </html>

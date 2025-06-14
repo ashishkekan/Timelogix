@@ -30,3 +30,11 @@ def currency_format(number):
     except Exception:
         return "-"
     return "₹" + str(indian_currency_format)
+
+
+@register.filter
+def hours_minutes(td):
+    total_seconds = int(td.total_seconds())
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes = remainder // 60
+    return f"{hours:02}:{minutes:02}"
