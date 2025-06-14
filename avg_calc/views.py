@@ -1,6 +1,5 @@
 from datetime import datetime, time, timedelta
 
-from django.urls import reverse
 import pandas as pd
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -14,6 +13,7 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils.timezone import is_naive, localtime, make_aware
 from xhtml2pdf import pisa
 

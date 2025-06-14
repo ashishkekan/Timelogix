@@ -24,7 +24,7 @@
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-6">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
                         {% if not user.is_staff %}
                             <a href="{% url 'worktime' %}" class="nav-link">Worklog</a>
                             <a href="{% url 'import-timelogs' %}" class="nav-link">Upload Worklog</a>
@@ -136,50 +136,7 @@
             </div>
         </div>
     </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu toggle
-            const toggleButton = document.querySelector('.mobile-toggle');
-            const mobileMenu = document.querySelector('.mobile-menu');
-            toggleButton.addEventListener('click', function() {
-                mobileMenu.classList.toggle('active');
-            });
-
-            // Dropdown toggle
-            const dropdownButton = document.querySelector('#userDropdown');
-            const dropdownMenu = document.querySelector('#dropdownMenu');
-            if (dropdownButton && dropdownMenu) {
-                dropdownButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    dropdownMenu.classList.toggle('hidden');
-                    dropdownButton.setAttribute('aria-expanded', dropdownMenu.classList.contains('hidden') ? 'false' : 'true');
-                });
-
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                        dropdownMenu.classList.add('hidden');
-                        dropdownButton.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            }
-
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="{% static 'js/scripts.js' %}"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
