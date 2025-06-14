@@ -102,6 +102,11 @@ class LeaveForm(forms.ModelForm):
             "end_date": forms.DateInput(attrs={"type": "date"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
 
 class TaskForm(forms.ModelForm):
     class Meta:
