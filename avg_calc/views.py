@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from io import BytesIO
 
 import pandas as pd
 from django.contrib import messages
@@ -12,6 +13,8 @@ from django.core.paginator import Paginator
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 from .forms import (
     ChangePasswordForm,
@@ -689,3 +692,47 @@ def delete_user(request, user_id):
         messages.success(request, "User deleted successfully.")
         return redirect("user-list")
     return render(request, "worktime/users.html", {"user_obj": user_obj})
+
+
+@login_required
+def export_worklog(request):
+    today = datetime.now().date()
+
+    # Get selected month from query params, default to current month
+    selected_month = int(request.GET.get("month", today.month))
+    selected_year = today.year  # Use current year
+
+    # Compute first and last day of the selected month
+    start_of_month = datetime(selected_year, selected_month, 1).date()
+    if selected_month == 12:
+        end_of_month = datetime(selected_year + 1, 1, 1).date() - timedelta(days=1)
+    else:
+        end_of_month = datetime(
+            selected_year, selected_month + 1, 1
+        ).date() - timedelta(days=1)
+
+    # Filter logs
+    work_logs = WorkTimeEntry.objects.filter(
+        user=request.user, date__range=[start_of_month, end_of_month]
+    ).order_by("date")
+
+    # Generate PDF
+    template = get_template("worktime/worklog_pdf.html")
+    html = template.render(
+        {
+            "user": request.user,
+            "work_logs": work_logs,
+            "month": start_of_month.strftime("%B"),
+            "year": selected_year,
+        }
+    )
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = (
+        f'attachment; filename="worklog_{selected_month}_{selected_year}.pdf"'
+    )
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse("Error creating PDF", status=500)
+    return response
