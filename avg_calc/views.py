@@ -700,6 +700,13 @@ def export_worklog(request):
 
     selected_month = int(request.GET.get("month", today.month))
     selected_year = today.year
+    user_id = request.GET.get("user")
+
+    # Use selected user if staff; else restrict to self
+    if request.user.is_staff and user_id:
+        user = get_object_or_404(User, id=user_id)
+    else:
+        user = request.user
 
     start_of_month = datetime(selected_year, selected_month, 1).date()
     if selected_month == 12:
@@ -710,7 +717,7 @@ def export_worklog(request):
         ).date() - timedelta(days=1)
 
     work_logs = WorkTimeEntry.objects.filter(
-        user=request.user, date__range=[start_of_month, end_of_month]
+        user=user, date__range=[start_of_month, end_of_month]
     ).order_by("date")
 
     # Initialize totals
@@ -742,7 +749,7 @@ def export_worklog(request):
     template = get_template("worktime/worklog_pdf.html")
     html = template.render(
         {
-            "user": request.user,
+            "user": user,
             "work_logs": work_logs,
             "month": start_of_month.strftime("%B"),
             "year": selected_year,
