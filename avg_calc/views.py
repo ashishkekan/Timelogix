@@ -1,5 +1,4 @@
-from datetime import datetime, timedelta
-from io import BytesIO
+from datetime import datetime, time, timedelta
 
 import pandas as pd
 from django.contrib import messages
@@ -14,9 +13,10 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import get_template
+from django.utils.timezone import is_naive, localtime, make_aware
 from xhtml2pdf import pisa
 
-from .forms import (
+from avg_calc.forms import (
     ChangePasswordForm,
     DailyWorkSummaryForm,
     LeaveForm,
@@ -28,7 +28,7 @@ from .forms import (
     UserEditForm,
     WorkTimeEntryForm,
 )
-from .models import (
+from avg_calc.models import (
     DailyWorkSummary,
     Leave,
     RecentActivity,
@@ -36,9 +36,27 @@ from .models import (
     Task,
     WorkTimeEntry,
 )
-from .templatetags.custom_filter import format_duration
+from avg_calc.templatetags.custom_filter import format_duration
 
 TARGET_WORK_TIME = timedelta(hours=8, minutes=40)
+
+
+def safe_localtime(time_obj, date_obj=None):
+    if time_obj is None:
+        return ""
+
+    # If only time is provided, combine with date (if available)
+    if isinstance(time_obj, time) and date_obj:
+        dt = datetime.combine(date_obj, time_obj)
+    elif isinstance(time_obj, datetime):
+        dt = time_obj
+    else:
+        return str(time_obj)  # fallback (if neither time nor datetime)
+
+    if is_naive(dt):
+        dt = make_aware(dt)
+
+    return localtime(dt).strftime("%H:%M")
 
 
 def log_activity(user, description):
@@ -697,12 +715,10 @@ def delete_user(request, user_id):
 @login_required
 def export_worklog(request):
     today = datetime.now().date()
-
     selected_month = int(request.GET.get("month", today.month))
     selected_year = today.year
     user_id = request.GET.get("user")
 
-    # Use selected user if staff; else restrict to self
     if request.user.is_staff and user_id:
         user = get_object_or_404(User, id=user_id)
     else:
@@ -720,42 +736,63 @@ def export_worklog(request):
         user=user, date__range=[start_of_month, end_of_month]
     ).order_by("date")
 
-    # Initialize totals
+    data = []
     total_work_time = timedelta()
     total_lunch_time = timedelta()
     half_days = 0
 
     for log in work_logs:
-        # Work time
-        if log.total_work_time:
-            total_work_time += log.total_work_time
+        login = safe_localtime(log.login_time)
+        logout = safe_localtime(log.logout_time)
+        breakout = safe_localtime(log.breakout_time)
+        breakin = safe_localtime(log.breakin_time)
 
-        # Lunch time (break duration)
-        break_start = datetime.combine(log.date, log.breakout_time)
-        break_end = datetime.combine(log.date, log.breakin_time)
-        lunch_duration = break_end - break_start
+        total_work = log.total_work_time
+
+        if log.breakout_time and log.breakin_time:
+            break_start = datetime.combine(log.date, log.breakout_time)
+            break_end = datetime.combine(log.date, log.breakin_time)
+            lunch_duration = break_end - break_start
+        else:
+            lunch_duration = timedelta()
+
+        if total_work:
+            total_work_time += total_work
+            if total_work < timedelta(hours=6, minutes=30):
+                half_days += 1
+
         total_lunch_time += lunch_duration
 
-        # Half day condition: less than 6 hours 30 minutes
-        if log.total_work_time and log.total_work_time < timedelta(hours=6, minutes=30):
-            half_days += 1
+        data.append(
+            {
+                "Date": log.date.strftime("%Y-%m-%d"),
+                "Login": login,
+                "Logout": logout,
+                "Break Out": breakout,
+                "Break In": breakin,
+                "Total Work Time": str(total_work or ""),
+            }
+        )
 
-    present_days = work_logs.count()
+    df = pd.DataFrame(data)
+    present_days = len(df)
     average_work_time = (
         total_work_time / present_days if present_days > 0 else timedelta()
     )
 
-    # Generate PDF
+    # Convert df to HTML table
+    table_html = df.to_html(index=False, classes="styled-table", border=1)
+
     template = get_template("worktime/worklog_pdf.html")
     html = template.render(
         {
             "user": user,
-            "work_logs": work_logs,
             "month": start_of_month.strftime("%B"),
             "year": selected_year,
+            "table_html": table_html,
+            "present_days": present_days,
             "total_work_time": total_work_time,
             "total_lunch_time": total_lunch_time,
-            "present_days": present_days,
             "average_work_time": average_work_time,
             "half_days": half_days,
         }

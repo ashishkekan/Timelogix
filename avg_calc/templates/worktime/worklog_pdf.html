@@ -5,63 +5,37 @@
     <style>
         body { font-family: sans-serif; font-size: 12px; }
         h2 { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #000; padding: 6px; text-align: center; }
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .styled-table th, .styled-table td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <h2>Worklog for {{ user.get_full_name }} - {{ month }} {{ year }}</h2>
-    <table>
-        <thead>
+    {{ table_html|safe }}
+    <div style="margin-top: 30px;">
+        <h3 style="font-size: 18px; margin-bottom: 15px;">Summary Report</h3>
+        <table style="width: 100%; font-size: 14px;">
             <tr>
-                <th>Date</th>
-                <th>Login</th>
-                <th>Logout</th>
-                <th>Break Out</th>
-                <th>Break In</th>
-                <th>Total Work Time</th>
+                <td><strong>Net Present Days:</strong> {{ present_days }}</td>
+                <td><strong>Total Work Hrs:</strong> {{ total_work_time|hours_minutes }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for entry in work_logs %}
-                <tr>
-                    <td>{{ entry.date }}</td>
-                    <td>{{ entry.login_time }}</td>
-                    <td>{{ entry.logout_time }}</td>
-                    <td>{{ entry.breakout_time }}</td>
-                    <td>{{ entry.breakin_time }}</td>
-                    <td>{{ entry.total_work_time }}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="6">No work logs found.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <hr style="margin-top: 40px;">
-
-    <h3 style="color: #2c3e50; font-size: 18px; margin-top: 30px;">Summary Report</h3>
-
-    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-        <tr>
-            <td><strong style="color: #1abc9c;">Net Present Days:</strong></td>
-            <td>{{ present_days }}</td>
-        </tr>
-        <tr>
-            <td><strong style="color: #3498db;">Total Work Hrs:</strong></td>
-            <td>{{ total_work_time|hours_minutes }}</td>
-        </tr>
-        <tr>
-            <td><strong style="color: #f39c12;">Total Lunch Hrs:</strong></td>
-            <td>{{ total_lunch_time|hours_minutes }}</td>
-        </tr>
-        <tr>
-            <td><strong style="color: #8e44ad;">Average Work Hrs:</strong></td>
-            <td>{{ average_work_time|hours_minutes }}</td>
-        </tr>
-        <tr>
-            <td><strong style="color: #e74c3c;">Half Days (&lt; 6h 30m):</strong></td>
-            <td>{{ half_days }}</td>
-        </tr>
-    </table>
+            <tr>
+                <td><strong>Total Lunch Hrs:</strong> {{ total_lunch_time|hours_minutes }}</td>
+                <td><strong>Average Work Hrs:</strong> {{ average_work_time|hours_minutes }}</td>
+            </tr>
+            <tr>
+                <td><strong>Half Days (&lt; 6h 30m):</strong> {{ half_days }}</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
 </body>
 </html>
