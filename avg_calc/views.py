@@ -10,9 +10,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import get_template
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.timezone import is_naive, localtime, make_aware
 from xhtml2pdf import pisa
@@ -519,8 +520,42 @@ def calculate_work_time(request):
 
 @login_required
 def work_summary_detail(request, pk):
-    summary = DailyWorkSummary.objects.get(pk=pk)
-    return render(request, "worktime/work_summary_detail.html", {"summary": summary})
+    """Display detailed work summary with stat cards."""
+    try:
+        summary = DailyWorkSummary.objects.get(pk=pk)
+    except DailyWorkSummary.DoesNotExist:
+        raise Http404("Work summary does not exist")
+
+    stat_cards = [
+        {
+            "title": "Date",
+            "value": summary.date,
+            "icon_class": "fas fa-calendar-alt",
+            "icon_color": "text-purple-500",
+        },
+        {
+            "title": "Average Work Time",
+            "value": summary.average_work_time,
+            "icon_class": "fas fa-clock",
+            "icon_color": "text-indigo-500",
+        },
+        {
+            "title": "Additional Time Needed",
+            "value": summary.additional_time_needed,
+            "icon_class": "fas fa-chart-line",
+            "icon_color": "text-teal-500",
+        },
+    ]
+
+    return TemplateResponse(
+        request,
+        "worktime/work_summary_detail.html",
+        {
+            "summary": summary,
+            "stat_cards": stat_cards,
+            "username": request.user.username,
+        },
+    )
 
 
 @login_required

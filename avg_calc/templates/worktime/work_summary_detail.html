@@ -10,27 +10,15 @@
         <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="stat-card">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-gray-500 font-medium text-sm uppercase">Date</h4>
-                <i class="fas fa-calendar-alt text-purple-500 text-lg"></i>
+        {% for card in stat_cards %}
+            <div class="stat-card">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-gray-500 font-medium text-sm uppercase">{{ card.title }}</h4>
+                    <i class="{{ card.icon_class }} {{ card.icon_color }} text-lg"></i>
+                </div>
+                <p class="text-xl font-bold text-gray-900">{{ card.value }}</p>
             </div>
-            <p class="text-xl font-bold text-gray-900">{{ summary.date }}</p>
-        </div>
-        <div class="stat-card">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-gray-500 font-medium text-sm uppercase">Average Work Time</h4>
-                <i class="fas fa-clock text-indigo-500 text-lg"></i>
-            </div>
-            <p class="text-xl font-bold text-gray-900">{{ summary.average_work_time }}</p>
-        </div>
-        <div class="stat-card">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-gray-500 font-medium text-sm uppercase">Additional Time Needed</h4>
-                <i class="fas fa-chart-line text-teal-500 text-lg"></i>
-            </div>
-            <p class="text-xl font-bold text-gray-900">{{ summary.additional_time_needed }}</p>
-        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
