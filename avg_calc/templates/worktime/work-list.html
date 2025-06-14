@@ -13,12 +13,14 @@
                 <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="{% url 'export-worklog' %}?month={{ month_form.month.value }}" class="btn-create" title="Download Worklog">
-                    <i class="fa fa-download"></i>
+                <a href="{% url 'export-worklog' %}?month={{ month_form.month.value }}{% if request.user.is_staff %}&user={{ month_form.user.value }}{% else %}&user={{ request.user.id }}{% endif %}" 
+                    class="btn-create" 
+                    title="Download Worklog">
+                        <i class="fa fa-download"></i>
                 </a>
                 <a href="{% url 'create-timelogs' %}" class="btn-create">+</a>
                 <div class="dashboard-preview p-4">
-                    <form method="get" class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <form method="get" class="flex flex-row items-center space-x-4">
                         <div class="form-group w-full sm:w-auto">
                             {{ month_form.month|add_class:"form-control" }}
                         </div>
@@ -27,7 +29,9 @@
                                 {{ month_form.user|add_class:"form-control" }}
                             </div>
                         {% endif %}
-                        <button type="submit" class="btn-primary">Filter</button>
+                        <div class="form-group w-full sm:w-auto">
+                            <button type="submit" class="btn-primary">Filter</button>
+                        </div>
                     </form>
                 </div>
             </div>
