@@ -3,36 +3,34 @@
 {% block title %}Task List{% endblock %}
 
 {% block content %}
-<section class="py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Task List</h2>
-            <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
-            <a href="{% url 'create-task' %}" class="btn-primary mt-4 inline-block">Add New Task</a>
-        </div>
-        <div class="table-container glass-card max-w-3xl mx-auto">
-            <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Your Tasks</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Task Name</th>
-                        <th>Expected Completion Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for task in tasks %}
-                        <tr>
-                            <td>{{ task.task_name }}</td>
-                            <td>{{ task.expected_completion_date }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="2" class="text-center text-gray-600">No tasks found.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Task List</h2>
+        <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
+        <a href="{% url 'create-task' %}" class="btn-primary mt-4 inline-block">Add New Task</a>
     </div>
-</section>
+    <div class="table-container glass-card max-w-3xl mx-auto">
+        <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Your Tasks</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Expected Completion Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.task_name }}</td>
+                        <td>{{ task.expected_completion_date }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center text-gray-600">No tasks found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

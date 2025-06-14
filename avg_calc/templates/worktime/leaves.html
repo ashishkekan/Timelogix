@@ -4,41 +4,39 @@
 {% block title %}Leaves{% endblock %}
 
 {% block content %}
-<section class="py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-        <div class="flex justify-between items-center flex-col sm:flex-row mb-12">
-            <div class="text-center sm:text-left mb-4 sm:mb-0">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">My Leaves</h2>
-                <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
-            </div>
-            <a href="{% url 'apply-leave' %}" class="btn-create">+</a>
+<div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex justify-between items-center flex-col sm:flex-row mb-12">
+        <div class="text-center sm:text-left mb-4 sm:mb-0">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">My Leaves</h2>
+            <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
         </div>
-        <div class="table-container glass-card">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if leaves %}
-                        {% for entry in leaves %}
-                            <tr>
-                                <td>{{ entry.start_date|date:"h:i A, d M Y" }}</td>
-                                <td>{{ entry.end_date|date:"h:i A, d M Y" }}</td>
-                                <td>{{ entry.reason }}</td>
-                            </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="3" class="text-center text-gray-600 py-4">No entries found.</td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
+        <a href="{% url 'apply-leave' %}" class="btn-create">+</a>
     </div>
-</section>
+    <div class="table-container glass-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if leaves %}
+                    {% for entry in leaves %}
+                        <tr>
+                            <td>{{ entry.start_date|date:"h:i A, d M Y" }}</td>
+                            <td>{{ entry.end_date|date:"h:i A, d M Y" }}</td>
+                            <td>{{ entry.reason }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center text-gray-600 py-4">No entries found.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

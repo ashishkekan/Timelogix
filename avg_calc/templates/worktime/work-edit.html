@@ -4,23 +4,21 @@
 {% block title %}Edit WorkLog{% endblock %}
 
 {% block content %}
-<section class="py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Edit WorkLog</h2>
-            <p class="text-lg text-gray-600">Please update {{ entry.user.get_full_name }}'s worklogs here!</p>
-        </div>
-        <div class="form-container max-w-lg mx-auto glass-card">
-            <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Update Worklogs</h4>
-            <form method="post">
-                {% csrf_token %}
-                {form.as_p}
-                <div class="flex justify-between items-center mt-6">
-                    <a href="{% url 'worktime' %}" class="btn-secondary">← Back</a>
-                    <button type="submit" class="btn-primary">Submit</button>
-                </div>
-            </form>
-        </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Edit WorkLog</h2>
+        <p class="text-lg text-gray-600">Please update {{ entry.user.get_full_name }}'s worklogs here!</p>
     </div>
-</section>
+    <div class="form-container max-w-lg mx-auto glass-card">
+        <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Update Worklogs</h4>
+        <form method="post">
+            {% csrf_token %}
+            {{form.as_p}}
+            <div class="flex justify-between items-center mt-6">
+                <a href="{% url 'worktime' %}" class="btn-secondary">← Back</a>
+                <button type="submit" class="btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
