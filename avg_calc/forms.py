@@ -15,6 +15,11 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = ["username", "email", "password1", "password2"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
@@ -36,9 +41,19 @@ class WorkTimeEntryForm(forms.ModelForm):
             "breakin_time": forms.TimeInput(format="%H:%M"),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
 
 class UploadExcelForm(forms.Form):
     excel_file = forms.FileField(label="Upload Excel File")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
 
 
 class MonthChoiceForm(forms.Form):
@@ -81,6 +96,11 @@ class DailyWorkSummaryForm(forms.ModelForm):
             "date": forms.DateInput(attrs={"type": "date"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
 
 class SalaryExpensesForm(forms.ModelForm):
     class Meta:
@@ -91,6 +111,11 @@ class SalaryExpensesForm(forms.ModelForm):
                 attrs={"step": "0.01", "class": "form-control"}
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
 
 
 class LeaveForm(forms.ModelForm):
@@ -123,6 +148,11 @@ class TaskForm(forms.ModelForm):
             "expected_completion_date": forms.DateInput(attrs={"type": "date"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
 
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(widget=forms.PasswordInput, label="Current Password")
@@ -130,6 +160,11 @@ class ChangePasswordForm(forms.Form):
     confirm_password = forms.CharField(
         widget=forms.PasswordInput, label="Confirm New Password"
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
 
     def clean(self):
         super().clean()
@@ -149,3 +184,8 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ["username", "first_name", "last_name", "email"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"

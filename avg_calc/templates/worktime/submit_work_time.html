@@ -14,15 +14,7 @@
             <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Create Time Logs</h4>
             <form method="post">
                 {% csrf_token %}
-                {% for field in form %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field|add_class:"form-control" }}
-                        {% if field.errors %}
-                            <div class="form-error">{{ field.errors }}</div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+                {{form.as_p}}
                 <div class="flex justify-between items-center mt-6">
                     <a href="{% url 'dashboard' %}" class="btn-secondary">← Back</a>
                     <button type="submit" class="btn-primary">Submit</button>
