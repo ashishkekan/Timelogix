@@ -8,12 +8,11 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
-from django.core.paginator import InvalidPage, Paginator
+from django.core.paginator import Paginator
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import get_template
-from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.timezone import is_naive, localtime, make_aware
 from xhtml2pdf import pisa
@@ -702,90 +701,16 @@ def leaves(request):
 
 @login_required
 def users(request):
-    """Display a paginated list of all users with pagination links."""
     users = User.objects.all()
-    paginator = Paginator(users, 10)
-    page_number = request.GET.get("page", 1)
+    paginator = Paginator(users, 1)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
-    try:
-        page_obj = paginator.page(page_number)
-    except InvalidPage:
-        page_obj = paginator.page(1)
-
-    # Prepare pagination links
-    pagination = {
-        "links": [],
-        "show_pagination": paginator.num_pages > 1,
+    context = {
+        "users": users,
+        "page_obj": page_obj,
     }
-    if pagination["show_pagination"]:
-        # First page link
-        pagination["links"].append(
-            {
-                "text": "« First",
-                "href": (
-                    f"{reverse('user-list')}?page=1" if page_obj.has_previous() else ""
-                ),
-                "class": "disabled" if not page_obj.has_previous() else "",
-                "aria_label": "First",
-            }
-        )
-        # Previous page link
-        pagination["links"].append(
-            {
-                "text": "Previous",
-                "href": (
-                    f"{reverse('user-list')}?page={page_obj.previous_page_number}"
-                    if page_obj.has_previous()
-                    else ""
-                ),
-                "class": "disabled" if not page_obj.has_previous() else "",
-                "aria_label": "Previous",
-            }
-        )
-        # Current page indicator
-        pagination["links"].append(
-            {
-                "text": f"Page {page_obj.number} of {paginator.num_pages}",
-                "href": "",
-                "class": "active",
-                "aria_label": "Current page",
-            }
-        )
-        # Next page link
-        pagination["links"].append(
-            {
-                "text": "Next",
-                "href": (
-                    f"{reverse('user-list')}?page={page_obj.next_page_number}"
-                    if page_obj.has_next()
-                    else ""
-                ),
-                "class": "disabled" if not page_obj.has_next() else "",
-                "aria_label": "Next",
-            }
-        )
-        # Last page link
-        pagination["links"].append(
-            {
-                "text": "Last »",
-                "href": (
-                    f"{reverse('user-list')}?page={paginator.num_pages}"
-                    if page_obj.has_next()
-                    else ""
-                ),
-                "class": "disabled" if not page_obj.has_next() else "",
-                "aria_label": "Last",
-            }
-        )
-
-    return TemplateResponse(
-        request,
-        "worktime/users.html",
-        {
-            "page_obj": page_obj,
-            "pagination": pagination,
-        },
-    )
+    return render(request, "worktime/users.html", context)
 
 
 @login_required

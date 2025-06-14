@@ -38,18 +38,42 @@
                 </tbody>
             </table>
         </div>
-        {% if pagination.links %}
+        {% if page_obj.has_other_pages %}
             <div class="pagination">
                 <ul class="flex space-x-2">
-                    {% for link in pagination.links %}
-                        <li class="page-item {{ link.class }}">
-                            {% if link.href %}
-                                <a class="page-link" href="{{ link.href }}" aria-label="{{ link.aria_label }}">{{ link.text }}</a>
-                            {% else %}
-                                <span class="page-link">{{ link.text }}</span>
-                            {% endif %}
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">« First</a>
                         </li>
-                    {% endfor %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">« First</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    {% endif %}
+                    <li class="page-item active">
+                        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">Last »</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Last »</span>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         {% endif %}
