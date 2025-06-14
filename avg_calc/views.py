@@ -702,7 +702,7 @@ def leaves(request):
 @login_required
 def users(request):
     users = User.objects.all()
-    paginator = Paginator(users, 1)
+    paginator = Paginator(users, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
