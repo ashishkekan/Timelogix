@@ -15,11 +15,7 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="{{ form.excel_file.id_for_label }}">{{ form.excel_file.label }}</label>
-                    {{ form.excel_file|add_class:"form-control" }}
-                    {% if form.excel_file.errors %}
-                        <div class="form-error">{{ form.excel_file.errors }}</div>
-                    {% endif %}
+                    {{form.as_p}}
                 </div>
                 <div class="flex justify-between items-center mt-6">
                     <a href="{% url 'export-template' %}" class="btn-secondary">Export Template</a>
