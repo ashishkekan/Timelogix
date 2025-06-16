@@ -64,7 +64,7 @@ body {
 
 .btn-primary:hover {
     background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -120,20 +120,20 @@ body {
 }
 
 .btn-danger {
-    background: var(--danger);
+    background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
+    padding: 0.45rem 0.90rem;
+    border-radius: 10px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     transition: all 0.3s ease;
     border: none;
 }
 
 .btn-danger:hover {
-    background: #b91c1c;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #ed5252 0%, #b91c1c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .btn-create {
