@@ -305,9 +305,11 @@ def dashboard(request):
         "leaves": leaves,
         "average_time": format_duration(average_time),
         "time_needed": (
-            format_duration(need_time) if need_time else "0 hours, 0 minutes"
+            format_duration(need_time)
+            if not average_time >= TARGET_WORK_TIME.total_seconds()
+            else "0 hrs, 0 mins"
         ),
-        "overtime": format_duration(overtime) if overtime else "0 hours, 0 minutes",
+        "overtime": format_duration(overtime) if overtime else "0 hrs, 0 mins",
         "total_users": total_users,
         "total_worklogs": total_worklogs,
         "total_expenses": total_expenses["total"],
