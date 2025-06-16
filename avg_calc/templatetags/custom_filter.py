@@ -11,7 +11,7 @@ register = template.Library()
 def format_duration(seconds):
     hours, remainder = divmod(int(seconds), 3600)
     minutes, _ = divmod(remainder, 60)
-    return f"{hours} hours, {minutes} minutes"
+    return f"{hours} hrs, {minutes} mins"
 
 
 @register.filter(name="add_class")
