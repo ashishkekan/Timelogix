@@ -162,7 +162,7 @@ def export_template(request):
 @login_required
 def upload_time_logs(request):
     if request.method == "POST":
-        form = UploadExcelForm(request.POST, request.FILES)
+        form = UploadExcelForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             excel_file = request.FILES["excel_file"]
             data = pd.read_excel(excel_file)

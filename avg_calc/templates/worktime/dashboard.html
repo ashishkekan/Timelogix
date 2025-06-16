@@ -62,12 +62,13 @@
 
             <div class="stat-card">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Target Status</h4>
+                    <h4 class="text-gray-500 font-medium text-sm uppercase">Working Average</h4>
                     <i class="fas fa-bullseye text-blue-500 text-lg"></i>
                 </div>
-                <span class="badge {% if target_met %}bg-teal-500{% else %}bg-red-500{% endif %}">
+                <p class="text-2xl font-bold text-gray-900">{{ average_time }}</p>
+                <!-- <span class="badge {% if target_met %}bg-teal-500{% else %}bg-red-500{% endif %}">
                     {{ target_met|yesno:"Met,Not Met" }}
-                </span>
+                </span> -->
                 <p class="text-gray-600 text-sm mt-2">8h 40m daily target</p>
             </div>
         </div>
