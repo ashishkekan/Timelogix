@@ -247,7 +247,6 @@ def dashboard(request):
             day.weekday() == 6 or day in excluded_saturdays
         )  # Exclude Sundays and selected Saturdays
         and day not in leave_days
-        and day >= today
     ]
 
     entries = WorkTimeEntry.objects.filter(
@@ -288,6 +287,7 @@ def dashboard(request):
     total_tasks = Task.objects.all().count()
     total_leaves = Leave.objects.all().count()
     top_3_recent_activity = RecentActivity.objects.order_by("-timestamp")[:3]
+
     context = {
         "month_form": month_form,
         "entries": entries if entries else 0,
@@ -835,9 +835,9 @@ def export_worklog(request):
                 "Date": log.date.strftime("%Y-%m-%d"),
                 "Login": login,
                 "Logout": logout,
-                "Break Out": breakout,
-                "Break In": breakin,
-                "Total Work Time": str(total_work or ""),
+                "Break-Out": breakout,
+                "Break-In": breakin,
+                "Total-Work-Time": str(total_work or ""),
             }
         )
 
