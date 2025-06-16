@@ -10,15 +10,17 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Description</th>
+                    <th>User</th>
                     <th>Timestamp</th>
+                    <th>Description</th>
                 </tr>
             </thead>
             <tbody>
                 {% for activity in page_obj %}
                     <tr>
-                        <td>{{ activity.description }}</td>
+                        <td>{{ activity.user.username }}</td>
                         <td class="text-gray-600">{{ activity.timestamp }}</td>
+                        <td>{{ activity.description }}</td>
                     </tr>
                 {% empty %}
                     <tr>

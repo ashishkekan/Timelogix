@@ -18,9 +18,9 @@
                 <p clasas="text-lg text-gray-600">Welcome back, {{ user.username }}!</p>
             </div>
             <div class="dashboard-preview p-4">
-                <form method="get" class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                    <div class="relative w-full sm:w-64">
-                        {{ month_form.month }}
+                <form method="get" class="flex flex-row items-center gap-2">
+                    <div class="w-auto">
+                        {{ month_form.month|add_class:"form-control" }}
                     </div>
                     <button type="submit" class="btn-primary">Filter</button>
                 </form>
