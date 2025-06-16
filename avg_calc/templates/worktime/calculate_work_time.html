@@ -1,15 +1,15 @@
 {% extends "navbar/base.html" %}
 {% load custom_filter %}
 
-{% block title %}Calculate Work Time{% endblock %}
+{% block title %}Calculate Time{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-2">Calculate Work Time</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Calculate Time</h2>
     </div>
     <div class="form-container max-w-lg mx-auto glass-card">
-        <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Work Time Calculation</h4>
+        <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Time Calculation</h4>
         <form method="post">
             {% csrf_token %}
             {{form.as_p}}

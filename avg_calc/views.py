@@ -136,8 +136,8 @@ def create_timelogs(request):
             work_time_entry = form.save(commit=False)
             work_time_entry.user = request.user
             work_time_entry.save()
-            log_activity(request.user, "Submit Worklog")
-            messages.success(request, "Worklog submitted successfully!")
+            log_activity(request.user, "Submit Timelogs")
+            messages.success(request, "Timelog submitted successfully!")
             return redirect("create-timelogs")
     else:
         form = WorkTimeEntryForm()
@@ -191,7 +191,7 @@ def upload_time_logs(request):
                     breakin_time=row["Break-In Time"],
                 )
                 log_activity(request.user, "Upload Work Time")
-            messages.success(request, "Worklogs uploaded successfully!")
+            messages.success(request, "Timelogs uploaded successfully!")
             return redirect("dashboard")
     else:
         form = UploadExcelForm()
@@ -869,7 +869,7 @@ def export_worklog(request):
 
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = (
-        f'attachment; filename="worklog_{selected_month}_{selected_year}.pdf"'
+        f'attachment; filename="timelog_{selected_month}_{selected_year}.pdf"'
     )
     pisa_status = pisa.CreatePDF(html, dest=response)
     if pisa_status.err:

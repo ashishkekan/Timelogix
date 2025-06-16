@@ -26,8 +26,8 @@
                     {% if user.is_authenticated %}
                     <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
                         {% if not user.is_staff %}
-                            <a href="{% url 'worktime' %}" class="nav-link">Worklog</a>
-                            <a href="{% url 'import-timelogs' %}" class="nav-link">Upload Worklog</a>
+                            <a href="{% url 'worktime' %}" class="nav-link">Timelogs</a>
+                            <a href="{% url 'import-timelogs' %}" class="nav-link">Upload Timelogs</a>
                             <a href="{% url 'expenses' %}" class="nav-link">Expenses</a>
                         {% endif %}
                     {% endif %}

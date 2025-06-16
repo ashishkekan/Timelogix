@@ -2,20 +2,20 @@
 {% load custom_filter %}
 {% load static %}
 
-{% block title %}Work Logs{% endblock %}
+{% block title %}TimeLogs{% endblock %}
 
 {% block content %}
 <section class="py-0">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="flex justify-between items-center flex-col sm:flex-row mb-12">
             <div class="text-center sm:text-left mb-4 sm:mb-0">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">My Work Logs</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">My TimeLogs</h2>
                 <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="{% url 'export-worklog' %}?month={{ month_form.month.value }}{% if request.user.is_staff %}&user={{ month_form.user.value }}{% else %}&user={{ request.user.id }}{% endif %}" 
                     class="btn-create" 
-                    title="Download Worklog">
+                    title="Download">
                         <i class="fa fa-download"></i>
                 </a>
                 <a href="{% url 'create-timelogs' %}" class="btn-create">+</a>
