@@ -49,10 +49,17 @@ class SalaryExpenses(models.Model):
 
 
 class Leave(models.Model):
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Rejected", "Rejected"),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     reason = models.CharField(max_length=255)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
 
     def __str__(self):
         return f"{self.user.username} - {self.start_date} to {self.end_date}"

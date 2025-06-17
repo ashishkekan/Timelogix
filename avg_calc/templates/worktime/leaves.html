@@ -19,15 +19,33 @@
                     <th>Start Date</th>
                     <th>End Date</th>
                     <th>Reason</th>
+                    <th>Status</th>
+                    {% if request.user.is_staff %}
+                        <th>Action</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% if leaves %}
                     {% for entry in leaves %}
                         <tr>
-                            <td>{{ entry.start_date|date:"h:i A, d M Y" }}</td>
-                            <td>{{ entry.end_date|date:"h:i A, d M Y" }}</td>
+                            <td>{{ entry.start_date }}</td>
+                            <td>{{ entry.end_date }}</td>
                             <td>{{ entry.reason }}</td>
+                            <td>{{ entry.status }}</td>
+                            {% if request.user.is_staff %}
+                                <td>
+                                    {% if entry.status == 'Pending' %}
+                                        <form method="post" action="{% url 'update-leave-status' entry.id %}">
+                                            {% csrf_token %}
+                                            <button name="action" value="approve" class="text-green-600 font-bold">✔</button>
+                                            <button name="action" value="reject" class="text-red-600 font-bold">✖</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-gray-500">—</span>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 {% else %}

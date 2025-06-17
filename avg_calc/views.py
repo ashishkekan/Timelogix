@@ -2,6 +2,7 @@ from datetime import datetime, time, timedelta
 
 import pandas as pd
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
@@ -16,6 +17,7 @@ from django.template.loader import get_template
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.timezone import is_naive, localtime, make_aware
+from django.views.decorators.http import require_POST
 from xhtml2pdf import pisa
 
 from avg_calc.forms import (
@@ -736,7 +738,10 @@ def delete_timelogs(request, pk):
 
 @login_required
 def leaves(request):
-    leaves = Leave.objects.filter(user=request.user)
+    if request.user.is_staff:
+        leaves = Leave.objects.all()
+    else:
+        leaves = Leave.objects.filter(user=request.user)
     return render(request, "worktime/leaves.html", {"leaves": leaves})
 
 
@@ -875,3 +880,18 @@ def export_worklog(request):
     if pisa_status.err:
         return HttpResponse("Error creating PDF", status=500)
     return response
+
+
+@staff_member_required
+@require_POST
+def update_leave_status(request, leave_id):
+    leave = get_object_or_404(Leave, id=leave_id)
+    action = request.POST.get("action")
+
+    if action == "approve":
+        leave.status = "Approved"
+    elif action == "reject":
+        leave.status = "Rejected"
+    leave.save()
+    messages.success(request, f"Leave {action}d successfully!")
+    return redirect("leaves")

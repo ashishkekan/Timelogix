@@ -151,14 +151,14 @@
                 <p class="text-gray-600 text-sm mt-2">All projects</p>
             </div>
 
-            <div class="stat-card">
+            <a href="{% url 'leaves' %}" class="stat-card text-decoration-none">
                 <div class="flex items-center justify-between mb-4">
                     <h4 class="text-gray-500 font-medium text-sm uppercase">Total Leaves</h4>
                     <i class="fas fa-leaf text-indigo-600 text-lg"></i>
                 </div>
                 <p class="text-2xl font-bold text-gray-900">{{ total_leaves }}</p>
                 <p class="text-gray-600 text-sm mt-2">All months</p>
-            </div>
+            </a>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">

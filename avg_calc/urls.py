@@ -29,4 +29,9 @@ urlpatterns = [
     path("edit-user/<int:user_id>", views.edit_user, name="edit-user"),
     path("delete-user/<int:user_id>", views.delete_user, name="delete-user"),
     path("export-timelogs/pdf/", views.export_worklog, name="export-worklog"),
+    path(
+        "leave/<int:leave_id>/status/",
+        views.update_leave_status,
+        name="update-leave-status",
+    ),
 ]
