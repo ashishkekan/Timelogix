@@ -16,8 +16,11 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Start Date</th>
-                    <th>End Date</th>
+                    {% if request.user.is_staff %}
+                        <th>User</th>
+                    {% endif %}
+                    <th>Start dt</th>
+                    <th>End dt</th>
                     <th>Reason</th>
                     <th>Status</th>
                     {% if request.user.is_staff %}
@@ -29,6 +32,9 @@
                 {% if leaves %}
                     {% for entry in leaves %}
                         <tr>
+                            {% if request.user.is_staff %}
+                                <td>{{ entry.user.username }}</td>
+                            {% endif %}
                             <td>{{ entry.start_date }}</td>
                             <td>{{ entry.end_date }}</td>
                             <td>{{ entry.reason }}</td>

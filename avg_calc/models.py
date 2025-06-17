@@ -66,12 +66,18 @@ class Leave(models.Model):
 
 
 class Task(models.Model):
+    TASK_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Rejected", "Rejected"),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task_name = models.CharField(max_length=255)
     expected_time = models.DurationField()
     start_time = models.DateTimeField()
     total_hours = models.FloatField()
     expected_completion_date = models.DateField()
+    status = models.CharField(max_length=10, choices=TASK_CHOICES, default="Pending")
 
     def __str__(self):
         return self.task_name

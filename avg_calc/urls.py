@@ -34,4 +34,9 @@ urlpatterns = [
         views.update_leave_status,
         name="update-leave-status",
     ),
+    path(
+        "task/<int:task_id>/status/",
+        views.update_task_status,
+        name="update-task-status",
+    ),
 ]

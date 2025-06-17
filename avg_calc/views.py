@@ -339,7 +339,7 @@ def dashboard(request):
             "icon_color": "text-purple-500",
         },
         {
-            "url": reverse("create-task"),
+            "url": reverse("task-list"),
             "title": "Tasks",
             "icon": "fas fa-tasks",
             "icon_color": "text-blue-500",
@@ -600,7 +600,10 @@ def create_task(request):
 
 @login_required()
 def task_list(request):
-    tasks = Task.objects.filter(user=request.user)
+    if not request.user.is_staff:
+        tasks = Task.objects.filter(user=request.user)
+    else:
+        tasks = Task.objects.all()
     return render(request, "worktime/task_list.html", {"tasks": tasks})
 
 
@@ -895,3 +898,18 @@ def update_leave_status(request, leave_id):
     leave.save()
     messages.success(request, f"Leave {action}d successfully!")
     return redirect("leaves")
+
+
+@staff_member_required
+@require_POST
+def update_task_status(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    action = request.POST.get("action")
+
+    if action == "approve":
+        task.status = "Approved"
+    elif action == "reject":
+        task.status = "Rejected"
+    task.save()
+    messages.success(request, f"Task {action}d successfully!")
+    return redirect("task-list")

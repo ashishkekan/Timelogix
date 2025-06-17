@@ -4,25 +4,52 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6">
-    <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-2">Task List</h2>
-        <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
-        <a href="{% url 'create-task' %}" class="btn-primary mt-4 inline-block">Add New Task</a>
+    <div class="flex justify-between items-center flex-col sm:flex-row mb-12">
+        <div class="text-center sm:text-left mb-4 sm:mb-0">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Task List</h2>
+            <p class="text-lg text-gray-600">Hi, {{ request.user.username }}!</p>
+        </div>
+        <a href="{% url 'create-task' %}" class="btn-create">+</a>
     </div>
-    <div class="table-container glass-card max-w-3xl mx-auto">
-        <h4 class="text-lg font-semibold text-gray-900 mb-6 text-center">Your Tasks</h4>
+    <div class="table-container glass-card max-w-5xl mx-auto">
         <table class="table">
             <thead>
                 <tr>
+                    <th>Sr. No.</th>
+                    {% if request.user.is_staff %}
+                        <th>User</th>
+                    {% endif %}
                     <th>Task Name</th>
                     <th>Expected Completion Date</th>
+                    <th>Status</th>
+                    {% if request.user.is_staff %}
+                        <th>Action</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for task in tasks %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
+                        {% if request.user.is_staff %}
+                            <td>{{ task.user.username }}</td>
+                        {% endif %}
                         <td>{{ task.task_name }}</td>
                         <td>{{ task.expected_completion_date }}</td>
+                        <td>{{ task.status }}</td>
+                        {% if request.user.is_staff %}
+                            <td>
+                                {% if task.status == 'Pending' %}
+                                    <form method="post" action="{% url 'update-task-status' task.id %}">
+                                        {% csrf_token %}
+                                        <button name="action" value="approve" class="text-green-600 font-bold">✔</button>
+                                        <button name="action" value="reject" class="text-red-600 font-bold">✖</button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-gray-500">—</span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
                     </tr>
                 {% empty %}
                     <tr>
