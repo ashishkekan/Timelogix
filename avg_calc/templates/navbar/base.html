@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TimeLogs{% endblock %}</title>
+    <title>{% block title %}Timelogix{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -18,7 +18,7 @@
                 <!-- Logo -->
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-clock text-xl"></i>
-                    <a href="{% url 'dashboard' %}" class="text-lg font-bold tracking-tight">TimeLogs</a>
+                    <a href="{% url 'dashboard' %}" class="text-lg font-bold tracking-tight">Timelogix</a>
                 </div>
 
                 <!-- Desktop Navigation -->
@@ -87,53 +87,8 @@
         {% block content %}
         {% endblock %}
     </main>
-    <footer class="gradient-bg text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <i class="fas fa-clock text-2xl"></i>
-                        <span class="text-xl font-bold tracking-tight">TimeLogs</span>
-                    </div>
-                    <p class="mb-4 text-gray-200 text-sm">Smart time tracking for productive teams and individuals.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-200 hover:text-white transition"><i class="fab fa-twitter text-lg"></i></a>
-                        <a href="#" class="text-gray-200 hover:text-white transition"><i class="fab fa-linkedin text-lg"></i></a>
-                        <a href="#" class="text-gray-200 hover:text-white transition"><i class="fab fa-github text-lg"></i></a>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4 text-sm uppercase tracking-wider">Product</h4>
-                    <ul class="space-y-2 text-gray-200 text-sm">
-                        <li><a href="#" class="hover:text-white transition">Features</a></li>
-                        <li><a href="#" class="hover:text-white transition">Pricing</a></li>
-                        <li><a href="#" class="hover:text-white transition">Integrations</a></li>
-                        <li><a href="#" class="hover:text-white transition">Updates</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4 text-sm uppercase tracking-wider">Resources</h4>
-                    <ul class="space-y-2 text-gray-200 text-sm">
-                        <li><a href="#" class="hover:text-white transition">Documentation</a></li>
-                        <li><a href="#" class="hover:text-white transition">Help Center</a></li>
-                        <li><a href="#" class="hover:text-white transition">Community</a></li>
-                        <li><a href="#" class="hover:text-white transition">Tutorials</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4 text-sm uppercase tracking-wider">Company</h4>
-                    <ul class="space-y-2 text-gray-200 text-sm">
-                        <li><a href="#" class="hover:text-white transition">About Us</a></li>
-                        <li><a href="#" class="hover:text-white transition">Careers</a></li>
-                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-700/50 pt-8 text-center">
-                <p class="text-gray-200 text-sm">© 2025 TimeLogs. All rights reserved.</p>
-            </div>
-        </div>
+    <footer class="gradient-bg text-white py-4">
+        <p style="text-align: center;">Copyright © {% now "Y" %} Timelogix. All rights reserved.</p>
     </footer>
     <script src="{% static 'js/scripts.js' %}"></script>
     {% block extra_scripts %}{% endblock %}
