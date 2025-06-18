@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
     <header>
         <nav class="gradient-bg text-white py-3 px-4 sm:px-6 navbar">
             <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -83,7 +83,7 @@
             </div>
         </nav>
     </header>
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+    <main class="flex-grow max-w-7xl px-4 sm:px-10 py-10">
         {% block content %}
         {% endblock %}
     </main>
