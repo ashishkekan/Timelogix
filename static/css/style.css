@@ -12,7 +12,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    background: linear-gradient(135deg, #f1f5f9 0%, rgb(0, 128, 255) 100%);
     color: var(--dark);
     margin: 0;
     line-height: 1.6;
@@ -36,7 +36,7 @@ footer {
 
 .nav-link {
     position: relative;
-    color: white;
+    color: indigo;
     font-weight: 500;
     font-size: 0.9rem;
     padding: 0.5rem 0;
