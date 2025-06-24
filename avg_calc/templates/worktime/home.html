@@ -1,0 +1,454 @@
+{% extends 'navbar/base.html' %}
+{% load static %}
+
+{% block title %}TimeLogix - Smart Time Tracking & Productivity Analytics{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --primary: #4F46E5;
+        --secondary: #10B981;
+        --dark: #1F2937;
+        --light: #F9FAFB;
+    }
+    
+    .gradient-bg {
+        background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+        }
+    }
+    
+    .dashboard-preview {
+        border-radius: 12px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="gradient-bg pt-24 pb-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+            <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left lg:flex lg:items-center">
+                <div>
+                    <h1 class="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
+                        <span class="block">Smart Time Tracking</span>
+                        <span class="block text-indigo-200">For Productive Teams</span>
+                    </h1>
+                    <p class="mt-3 text-base text-indigo-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                        TimeLogix helps you analyze sitting time, track tasks, calculate salary expenses, and manage leaves - all in one powerful platform.
+                    </p>
+                    <div class="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
+                        <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                            <div class="rounded-md shadow">
+                                <a href="{% url 'register' %}" class="btn-primary w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-white md:py-4 md:text-lg md:px-10">
+                                    Start Free Trial
+                                </a>
+                            </div>
+                            <div class="mt-3 sm:mt-0 sm:ml-3">
+                                <a href="{% url 'dashboard' %}" class="btn-secondary w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-white md:py-4 md:text-lg md:px-10">
+                                    Live Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
+                <div class="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
+                    <div class="relative block w-full bg-white rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <img class="w-full dashboard-preview" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="TimeLogix dashboard preview">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="pulse-animation inline-flex items-center justify-center h-16 w-16 rounded-full bg-indigo-600 bg-opacity-90 cursor-pointer">
+                                <i class="fas fa-play text-white text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div id="features" class="py-16 bg-gray-50 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-base font-semibold text-indigo-600 tracking-wide uppercase">Features</h2>
+            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                Everything you need to optimize work time
+            </p>
+            <p class="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
+                TimeLogix combines powerful analytics with intuitive time tracking for maximum productivity.
+            </p>
+        </div>
+        
+        <div class="mt-16 grid gap-16 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-12">
+            <!-- Feature 1 -->
+            <div class="glass-card p-6 rounded-lg">
+                <div>
+                    <span class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                        <i class="fas fa-chair text-xl"></i>
+                    </span>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-900">Sitting Time Analysis</h3>
+                    <p class="mt-2 text-base text-gray-500">
+                        Get precise estimates of your sitting time with intelligent algorithms that analyze your work patterns and suggest optimal break times.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="glass-card p-6 rounded-lg">
+                <div>
+                    <span class="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                        <i class="fas fa-tasks text-xl"></i>
+                    </span>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-900">Task Time Tracking</h3>
+                    <p class="mt-2 text-base text-gray-500">
+                        Log time against specific tasks and projects with our intuitive interface. Categorize, tag, and analyze where your time goes.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="glass-card p-6 rounded-lg">
+                <div>
+                    <span class="flex items-center justify-center h-12 w-12 rounded-md bg-purple-500 text-white">
+                        <i class="fas fa-money-bill-wave text-xl"></i>
+                    </span>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-900">Salary & Expense Reports</h3>
+                    <p class="mt-2 text-base text-gray-500">
+                        Automatically calculate salary expenses based on logged hours and configured rates. Generate detailed reports for payroll.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="glass-card p-6 rounded-lg">
+                <div>
+                    <span class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
+                        <i class="fas fa-calendar-alt text-xl"></i>
+                    </span>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-900">Leave Management</h3>
+                    <p class="mt-2 text-base text-gray-500">
+                        Track vacation days, sick leaves, and other time off. Get alerts for upcoming leaves and view team availability at a glance.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Feature 5 -->
+            <div class="glass-card p-6 rounded-lg">
+                <div>
+                    <span class="flex items-center justify-center h-12 w-12 rounded-md bg-red-500 text-white">
+                        <i class="fas fa-chart-line text-xl"></i>
+                    </span>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-900">Productivity Analytics</h3>
+                    <p class="mt-2 text-base text-gray-500">
+                        Visualize your work patterns with beautiful charts. Identify productivity trends and opportunities for improvement.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Feature 6 -->
+            <div class="glass-card p-6 rounded-lg">
+                <div>
+                    <span class="flex items-center justify-center h-12 w-12 rounded-md bg-yellow-500 text-white">
+                        <i class="fas fa-bell text-xl"></i>
+                    </span>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-900">Smart Reminders</h3>
+                    <p class="mt-2 text-base text-gray-500">
+                        Get notified when you've been sitting too long, when tasks are taking longer than expected, or when important deadlines approach.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div id="how-it-works" class="py-16 bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
+            <div>
+                <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                    How TimeLogix Works
+                </h2>
+                <p class="mt-3 text-lg text-gray-500">
+                    Our simple three-step process helps you gain control over your time and productivity.
+                </p>
+                
+                <div class="mt-12">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                                <span class="text-xl font-bold">1</span>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg leading-6 font-medium text-gray-900">Track Your Time</h4>
+                            <p class="mt-2 text-base text-gray-500">
+                                Use our web app, desktop widget, or mobile app to track time spent on tasks. Our system automatically detects idle time.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex mt-8">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                                <span class="text-xl font-bold">2</span>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg leading-6 font-medium text-gray-900">Analyze Patterns</h4>
+                            <p class="mt-2 text-base text-gray-500">
+                                Our AI analyzes your sitting patterns, task durations, and productivity levels to provide actionable insights.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex mt-8">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                                <span class="text-xl font-bold">3</span>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg leading-6 font-medium text-gray-900">Optimize & Report</h4>
+                            <p class="mt-2 text-base text-gray-500">
+                                Use our reports to improve work habits, calculate payroll, manage leaves, and make data-driven decisions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 lg:mt-0">
+                <div class="relative mx-auto w-full rounded-lg shadow-lg overflow-hidden">
+                    <img class="w-full dashboard-preview" src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="TimeLogix analytics dashboard">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Section -->
+<div id="pricing" class="gradient-bg py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-base font-semibold text-white tracking-wide uppercase">Pricing</h2>
+            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
+                Simple, transparent pricing
+            </p>
+            <p class="mt-4 max-w-2xl text-xl text-indigo-100 mx-auto">
+                Choose the plan that fits your needs. No hidden fees, cancel anytime.
+            </p>
+        </div>
+        
+        <div class="mt-16 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-8">
+            <!-- Free Tier -->
+            <div class="glass-card relative p-8 rounded-2xl bg-white">
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <span class="badge inline-flex items-center px-4 py-1 rounded-full text-xs font-semibold tracking-widest bg-[#14b8a6] text-white">
+                        FREE
+                    </span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 text-center">Starter</h3>
+                <div class="mt-4 flex items-center justify-center">
+                    <span class="px-3 flex items-start text-6xl tracking-tight text-gray-900">
+                        <span class="mt-2 mr-2 text-4xl font-medium">$</span>
+                        <span class="font-extrabold">0</span>
+                    </span>
+                    <span class="text-xl font-medium text-gray-500">/month</span>
+                </div>
+                <p class="mt-4 text-sm text-gray-500 text-center">
+                    Perfect for individuals getting started with time tracking
+                </p>
+                <ul class="mt-6 space-y-4">
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Basic time tracking</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Sitting time analysis</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">3 projects</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Basic reports</p>
+                    </li>
+                </ul>
+                <div class="mt-8">
+                    <a href="{% url 'register' %}" class="btn-secondary block w-full py-3 px-6 text-center rounded-md text-white font-medium">
+                        Get started
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Pro Tier -->
+            <div class="glass-card relative p-8 rounded-2xl bg-white transform scale-105 z-10">
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <span class="badge inline-flex items-center px-4 py-1 rounded-full text-xs font-semibold tracking-widest bg-[#5b21b6] text-white">
+                        POPULAR
+                    </span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 text-center">Professional</h3>
+                <div class="mt-4 flex items-center justify-center">
+                    <span class="px-3 flex items-center justify-center text-6xl tracking-tight text-gray-900">
+                        <span class="mt-2 mr-2 text-4xl font-medium">$</span>
+                        <span class="font-extrabold">9</span>
+                    </span>
+                    <span class="text-xl font-medium text-gray-500">/month</span>
+                </div>
+                <p class="mt-4 text-sm text-gray-500 text-center">
+                    For professionals who need advanced analytics
+                </p>
+                <ul class="mt-6 space-y-4">
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Everything in Free</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Unlimited projects</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Advanced analytics</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Salary calculations</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Leave management</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Priority support</p>
+                    </li>
+                </ul>
+                <div class="mt-8">
+                    <a href="{% url 'register' %}" class="btn-primary block w-full py-3 px-6 text-center rounded-md text-white font-medium">
+                        Start free trial
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Enterprise Tier -->
+            <div class="glass-card relative p-8 rounded-2xl bg-white">
+                <h3 class="text-lg font-medium text-gray-900 text-center">Enterprise</h3>
+                <div class="mt-4 flex items-center justify-center">
+                    <span class="px-3 flex items-start text-6xl tracking-tight text-gray-900">
+                        <span class="mt-2 mr-2 text-4xl font-medium">$</span>
+                        <span class="font-extrabold">29</span>
+                    </span>
+                    <span class="text-xl font-medium text-gray-500">/month</span>
+                </div>
+                <p class="mt-4 text-sm text-gray-500 text-center">
+                    For teams and organizations needing custom solutions
+                </p>
+                <ul class="mt-6 space-y-4">
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Everything in Pro</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Team management</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Custom reporting</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">API access</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">Dedicated account manager</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-[#14b8a6]"></i>
+                        </div>
+                        <p class="ml-3 text-base text-gray-700">On-premise options</p>
+                    </li>
+                </ul>
+                <div class="mt-8">
+                    <a href="{% url 'home' %}#contact" class="btn-secondary block w-full py-3 px-6 text-center rounded-md text-white font-medium">
+                        Contact sales
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

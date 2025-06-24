@@ -5,7 +5,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.login, name="login"),
+    path("login/", views.login, name="login"),
     path("logout/", views.logout, name="logout"),
     path("register/", views.register, name="register"),
     path("profile/", views.profile_view, name="profile"),
@@ -39,4 +39,5 @@ urlpatterns = [
         views.update_task_status,
         name="update-task-status",
     ),
+    path("", views.home, name="home"),
 ]

@@ -13,13 +13,13 @@
 </head>
 <body class="font-sans antialiased text-gray-800 flex flex-col min-h-screen">
     <header class="sticky top-0 z-50">
-        <nav class="navbar bg-white shadow-sm">
+        <nav class="navbar glass-card backdrop-blur-md bg-[rgba(255,255,255,0.05)] border-b border-[rgba(255,255,255,0.2)]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16 items-center">
                     <!-- Logo -->
                     <div class="flex items-center space-x-2">
                         <i class="fas fa-clock text-2xl text-indigo-600"></i>
-                        <a href="{% url 'dashboard' %}" class="text-xl font-bold text-gray-900">Timelogix</a>
+                        <a href="{% url 'home' %}" class="text-xl font-bold">Timelogix</a>
                     </div>
 
                     <!-- Desktop Navigation -->
@@ -29,8 +29,12 @@
                             {% if not user.is_staff %}
                                 <a href="{% url 'worktime' %}" class="nav-link">Timelogs</a>
                                 <a href="{% url 'import-timelogs' %}" class="nav-link">Upload Timelogs</a>
-                                <a href="{% url 'expenses' %}" class="nav-link">Expenses</a>
+                                <a href="{% url 'expenses' %}" class="nav-link ">Expenses</a>
                             {% endif %}
+                        {% else %}
+                            <a href="{% url 'home' %}#features" class="nav-link ">Features</a>
+                            <a href="{% url 'home' %}#how-it-works" class="nav-link ">How It Works</a>
+                            <a href="{% url 'home' %}#pricing" class="nav-link ">Pricing</a>
                         {% endif %}
                     </div>
 
@@ -63,7 +67,7 @@
                             <a href="{% url 'login' %}" class="btn-primary text-sm px-4 py-2">Login</a>
                         {% endif %}
                         <!-- Mobile Menu Toggle -->
-                        <button class="sm:hidden text-gray-500 hover:text-gray-700 focus:outline-none mobile-toggle" type="button" aria-label="Toggle navigation">
+                        <button class="sm:hidden  hover:text-gray-300 focus:outline-none mobile-toggle" type="button" aria-label="Toggle navigation">
                             <i class="fas fa-bars text-lg"></i>
                         </button>
                     </div>
@@ -75,10 +79,14 @@
                         {% if user.is_authenticated %}
                             <a href="{% url 'dashboard' %}" class="nav-link py-1.5">Dashboard</a>
                             {% if not user.is_staff %}
-                                <a href="{% url 'worktime' %}" class="nav-link py-1.5">Timelogs</a>
-                                <a href="{% url 'import-timelogs' %}" class="nav-link py-1.5">Upload Timelogs</a>
-                                <a href="{% url 'expenses' %}" class="nav-link py-1.5">Expenses</a>
+                                <a href="{% url 'worktime' %}" class="nav-link py-1.5 ">Timelogs</a>
+                                <a href="{% url 'import-timelogs' %}" class="nav-link py-1.5 ">Upload Timelogs</a>
+                                <a href="{% url 'expenses' %}" class="nav-link py-1.5 ">Expenses</a>
                             {% endif %}
+                        {% else %}
+                            <a href="{% url 'home' %}#features" class="nav-link py-1.5 ">Features</a>
+                            <a href="{% url 'home' %}#how-it-works" class="nav-link py-1.5 ">How It Works</a>
+                            <a href="{% url 'home' %}#pricing" class="nav-link py-1.5 ">Pricing</a>
                         {% endif %}
                     </div>
                 </div>
@@ -89,7 +97,7 @@
         {% block content %}
         {% endblock %}
     </main>
-    <footer class="gradient-bg text-white py-4">
+    <footer class="glass-card backdrop-blur-md bg-[rgba(255,255,255,0.05)] border-b border-[rgba(255,255,255,0.2)] py-4">
         <p class="text-center">Copyright © {% now "Y" %} Timelogix. All rights reserved.</p>
     </footer>
     <script src="{% static 'js/scripts.js' %}"></script>
