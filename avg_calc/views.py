@@ -62,6 +62,9 @@ def safe_localtime(time_obj, date_obj=None):
 
     return localtime(dt).strftime("%H:%M")
 
+def home(request):
+    return render(request, "worktime/home.html")
+
 
 def log_activity(user, description):
     RecentActivity.objects.create(user=user, description=description)
