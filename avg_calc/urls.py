@@ -40,4 +40,5 @@ urlpatterns = [
         name="update-task-status",
     ),
     path("", views.home, name="home"),
+    path("demo-login/", views.demo_login, name="demo_login"),
 ]

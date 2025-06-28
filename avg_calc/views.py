@@ -3,6 +3,8 @@ from datetime import datetime, time, timedelta
 import pandas as pd
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
@@ -11,7 +13,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Sum
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import get_template
 from django.template.response import TemplateResponse
@@ -62,8 +64,204 @@ def safe_localtime(time_obj, date_obj=None):
 
     return localtime(dt).strftime("%H:%M")
 
+
 def home(request):
-    return render(request, "worktime/home.html")
+    """
+    Renders the TimeLogix homepage with dynamic content.
+
+    Returns:
+        HttpResponse: Rendered homepage template with content dictionaries.
+    """
+    context = {
+        "hero": {
+            "title_lines": [
+                {"text": "Smart Time Tracking", "class": "block"},
+                {"text": "For Productive Teams", "class": "block text-indigo-200"},
+            ],
+            "description": "TimeLogix helps you analyze sitting time, track tasks, calculate salary expenses, and manage leaves - all in one powerful platform.",
+            "buttons": [
+                {
+                    "text": "Start Free Trial",
+                    "url": reverse("register"),
+                    "class": "btn-primary w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-white md:py-4 md:text-lg md:px-10",
+                },
+                {
+                    "text": "Live Demo",
+                    "url": reverse(
+                        "demo_login"
+                    ),  # Changed from 'dashboard' to 'demo_login'
+                    "class": "btn-secondary w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-white md:py-4 md:text-lg md:px-10",
+                },
+            ],
+            "image": {
+                "src": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+                "alt": "TimeLogix dashboard preview",
+                "class": "w-full dashboard-preview",
+            },
+        },
+        "features": {
+            "header": {
+                "subtitle": "Features",
+                "title": "Everything you need to optimize work time",
+                "description": "TimeLogix combines powerful analytics with intuitive time tracking for maximum productivity.",
+            },
+            "items": [
+                {
+                    "icon": "fas fa-chair",
+                    "title": "Sitting Time Analysis",
+                    "description": "Get precise estimates of your sitting time with intelligent algorithms that analyze your work patterns and suggest optimal break times.",
+                    "icon_bg": "bg-indigo-500",
+                },
+                {
+                    "icon": "fas fa-tasks",
+                    "title": "Task Time Tracking",
+                    "description": "Log time against specific tasks and projects with our intuitive interface. Categorize, tag, and analyze where your time goes.",
+                    "icon_bg": "bg-green-500",
+                },
+                {
+                    "icon": "fas fa-money-bill-wave",
+                    "title": "Salary & Expense Reports",
+                    "description": "Automatically calculate salary expenses based on logged hours and configured rates. Generate detailed reports for payroll.",
+                    "icon_bg": "bg-purple-500",
+                },
+                {
+                    "icon": "fas fa-calendar-alt",
+                    "title": "Leave Management",
+                    "description": "Track vacation days, sick leaves, and other time off. Get alerts for upcoming leaves and view team availability at a glance.",
+                    "icon_bg": "bg-blue-500",
+                },
+                {
+                    "icon": "fas fa-chart-line",
+                    "title": "Productivity Analytics",
+                    "description": "Visualize your work patterns with beautiful charts. Identify productivity trends and opportunities for improvement.",
+                    "icon_bg": "bg-red-500",
+                },
+                {
+                    "icon": "fas fa-bell",
+                    "title": "Smart Reminders",
+                    "description": "Get notified when you've been sitting too long, when tasks are taking longer than expected, or when important deadlines approach.",
+                    "icon_bg": "bg-yellow-500",
+                },
+            ],
+        },
+        "how_it_works": {
+            "title": "How TimeLogix Works",
+            "description": "Our simple three-step process helps you gain control over your time and productivity.",
+            "steps": [
+                {
+                    "number": "1",
+                    "title": "Track Your Time",
+                    "description": "Use our web app, desktop widget, or mobile app to track time spent on tasks. Our system automatically detects idle time.",
+                },
+                {
+                    "number": "2",
+                    "title": "Analyze Patterns",
+                    "description": "Our AI analyzes your sitting patterns, task durations, and productivity levels to provide actionable insights.",
+                },
+                {
+                    "number": "3",
+                    "title": "Optimize & Report",
+                    "description": "Use our reports to improve work habits, calculate payroll, manage leaves, and make data-driven decisions.",
+                },
+            ],
+            "image": {
+                "src": "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+                "alt": "TimeLogix analytics dashboard",
+                "class": "w-full dashboard-preview",
+            },
+        },
+        "pricing": {
+            "header": {
+                "subtitle": "Pricing",
+                "title": "Simple, transparent pricing",
+                "description": "Choose the plan that fits your needs. No hidden fees, cancel anytime.",
+            },
+            "plans": [
+                {
+                    "name": "Starter",
+                    "badge": {"text": "FREE", "class": "bg-[#14b8a6]"},
+                    "price": {"amount": "0", "currency": "$", "period": "/month"},
+                    "description": "Perfect for individuals getting started with time tracking",
+                    "features": [
+                        "Basic time tracking",
+                        "Sitting time analysis",
+                        "3 projects",
+                        "Basic reports",
+                    ],
+                    "button": {
+                        "text": "Get started",
+                        "url": reverse("register"),
+                        "class": "btn-secondary block w-full py-3 px-6 text-center rounded-md text-white font-medium",
+                    },
+                },
+                {
+                    "name": "Professional",
+                    "badge": {"text": "POPULAR", "class": "bg-[#5b21b6]"},
+                    "price": {"amount": "9", "currency": "$", "period": "/month"},
+                    "description": "For professionals who need advanced analytics",
+                    "features": [
+                        "Everything in Free",
+                        "Unlimited projects",
+                        "Advanced analytics",
+                        "Salary calculations",
+                        "Leave management",
+                        "Priority support",
+                    ],
+                    "button": {
+                        "text": "Start free trial",
+                        "url": reverse("register"),
+                        "class": "btn-primary block w-full py-3 px-6 text-center rounded-md text-white font-medium",
+                    },
+                    "highlight": True,
+                },
+                {
+                    "name": "Enterprise",
+                    "price": {"amount": "29", "currency": "$", "period": "/month"},
+                    "description": "For teams and organizations needing custom solutions",
+                    "features": [
+                        "Everything in Pro",
+                        "Team management",
+                        "Custom reporting",
+                        "API access",
+                        "Dedicated account manager",
+                        "On-premise options",
+                    ],
+                    "button": {
+                        "text": "Contact sales",
+                        "url": reverse("home") + "#contact",
+                        "class": "btn-secondary block w-full py-3 px-6 text-center rounded-md text-white font-medium",
+                    },
+                },
+            ],
+        },
+    }
+    return render(request, "worktime/home.html", context)
+
+
+def demo_login(request):
+    """
+    Logs in a test user for the Live Demo and redirects to the dashboard.
+
+    Uses hardcoded credentials for the test user (username: test, password: Lemon@123).
+    Logs the activity and shows a success message.
+
+    Returns:
+        HttpResponseRedirect: Redirects to the dashboard if login is successful, or to the login page if authentication fails.
+    """
+    username = "test"
+    password = "Lemon@123"
+
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        auth_login(request, user)
+        log_activity(user, "Logged in via Live Demo")
+        messages.success(request, "Logged in as demo user!")
+        return redirect("dashboard")
+    else:
+        messages.error(
+            request, "Demo login failed. Please try again or contact support."
+        )
+        return redirect("login")
 
 
 def log_activity(user, description):
@@ -311,7 +509,7 @@ def dashboard(request):
         "average_time": format_duration(average_time),
         "time_needed": (
             format_duration(need_time)
-            if not average_time >= TARGET_WORK_TIME.total_seconds()
+            if entries and not average_time >= TARGET_WORK_TIME.total_seconds()
             else "0 hrs, 0 mins"
         ),
         "overtime": format_duration(overtime) if overtime else "0 hrs, 0 mins",
