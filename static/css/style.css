@@ -62,6 +62,15 @@ footer {
     width: 100%;
 }
 
+.footer-text {
+    position: relative;
+    color: indigo;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
 .btn-primary {
     background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
     color: white;
