@@ -1,15 +1,11 @@
 {% extends "navbar/base.html" %}
 {% load static %}
 {% load custom_filter %}
-
 {% block title %}Dashboard{% endblock %}
-
 {% block extra_head %}
 {% endblock %}
-
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6">
-    <!-- Header -->
     <div class="mb-12">
         <div class="flex justify-between items-center flex-col sm:flex-row">
             {% if not user.is_staff %}
@@ -29,9 +25,7 @@
         </div>
     </div>
 
-    <!-- User Dashboard -->
     <div class="user-dashboard {% if user.is_staff %}hidden{% endif %}">
-        <!-- Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             <div class="stat-card">
                 <div class="flex items-center justify-between mb-4">
@@ -66,9 +60,6 @@
                     <i class="fas fa-bullseye text-blue-500 text-lg"></i>
                 </div>
                 <p class="text-2xl font-bold text-gray-900">{{ average_time }}</p>
-                <!-- <span class="badge {% if target_met %}bg-teal-500{% else %}bg-red-500{% endif %}">
-                    {{ target_met|yesno:"Met,Not Met" }}
-                </span> -->
                 <p class="text-gray-600 text-sm mt-2">8h 40m daily target</p>
             </div>
         </div>
