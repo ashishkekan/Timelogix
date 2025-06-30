@@ -22,14 +22,17 @@ def add_class(field, css_class):
 
 
 @register.filter(name="currency_format")
-def currency_format(number):
-    if not number or (isinstance(number, float) and isnan(number)):
-        return "₹0"
+def currency_format(number, is_currency=False):
+    if not number or (isinstance(number, float) and number != number):
+        return "₹0" if is_currency else "0"
     try:
-        indian_currency_format = format_number(number, locale="en_IN")
+        if is_currency:
+            locale.setlocale(locale.LC_ALL, "en_IN")
+            formatted_number = intcomma(number)
+            return f"₹{formatted_number}"
+        return str(number)
     except Exception:
-        return "-"
-    return "₹" + str(indian_currency_format)
+        return "-" if is_currency else "0"
 
 
 @register.filter
