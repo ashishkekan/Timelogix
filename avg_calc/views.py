@@ -12,9 +12,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from django.db.models import Sum
+from django.db.models import CharField, Count, Sum, Value
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.template.loader import get_template
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -44,8 +44,8 @@ from avg_calc.models import (
 )
 from avg_calc.templatetags.custom_filter import format_duration
 
-from .forms import ChangePasswordForm, UserEditForm
-from .models import RecentActivity
+from .forms import ChangePasswordForm, MonthChoiceForm, UserEditForm
+from .models import Leave, RecentActivity, SalaryExpenses, Task, User, WorkTimeEntry
 
 TARGET_WORK_TIME = timedelta(hours=8, minutes=40)
 
@@ -426,11 +426,13 @@ def dashboard(request):
     today = datetime.now().date()
     month_form = MonthChoiceForm(request.GET or None)
     selected_month = int(month_form.data.get("month", today.month))
-    selected_year = today.year
+    selected_year = int(month_form.data.get("year", today.year))
 
     start_of_month = datetime(selected_year, selected_month, 1).date()
     end_of_month = start_of_month.replace(
-        month=selected_month % 12 + 1, day=1
+        month=(selected_month % 12) + 1 if selected_month < 12 else 1,
+        year=selected_year + 1 if selected_month == 12 else selected_year,
+        day=1,
     ) - timedelta(days=1)
 
     # Get leaves
@@ -454,20 +456,19 @@ def dashboard(request):
     all_days = [start_of_month + timedelta(days=i) for i in range(days_count)]
 
     # Identify excluded Saturdays
-    saturdays = [day for day in all_days if day.weekday() == 5]  # Saturday
+    saturdays = [day for day in all_days if day.weekday() == 5]
     excluded_saturdays = set()
     if len(saturdays) >= 1:
-        excluded_saturdays.add(saturdays[0])  # 1st
+        excluded_saturdays.add(saturdays[0])  # 1st Saturday
     if len(saturdays) >= 3:
-        excluded_saturdays.add(saturdays[2])  # 3rd
+        excluded_saturdays.add(saturdays[2])  # 3rd Saturday
 
     # Final working days
     final_days = [
         day
         for day in all_days
-        if not (
-            day.weekday() == 6 or day in excluded_saturdays
-        )  # Exclude Sundays and selected Saturdays
+        if day.weekday() != 6
+        and day not in excluded_saturdays
         and day not in leave_days
     ]
 
@@ -486,10 +487,12 @@ def dashboard(request):
         total_work_seconds / working_days_count if working_days_count else 0
     )
 
+    # Assuming TARGET_WORK_TIME is defined in settings or as a constant
+    TARGET_WORK_TIME = timedelta(hours=8, minutes=40)
+
     additional_seconds_per_day = 0
     need_time = 0
     overtime = 0
-
     if (
         working_days_count > 0
         and average_work_seconds < TARGET_WORK_TIME.total_seconds()
@@ -498,48 +501,142 @@ def dashboard(request):
         time_difference_seconds = total_target_seconds - total_work_seconds
         additional_seconds_per_day = time_difference_seconds / days_count
         need_time = additional_seconds_per_day / 60
+    elif working_days_count > 0:
+        total_target_seconds = TARGET_WORK_TIME.total_seconds() * working_days_count
         additional_overtime = total_work_seconds - total_target_seconds
-        overtime_by_days = additional_overtime / days_count
-        overtime = overtime_by_days / 60
+        overtime = (additional_overtime / days_count) / 60
 
     average_time = total_work_seconds / len(entries) if entries else 0
-    total_users = User.objects.all().count()
-    total_worklogs = WorkTimeEntry.objects.all().count()
-    total_expenses = SalaryExpenses.objects.aggregate(total=Sum("salary"))
-    total_tasks = Task.objects.all().count()
-    total_leaves = Leave.objects.all().count()
-    top_3_recent_activity = RecentActivity.objects.order_by("-timestamp")[:3]
 
-    context = {
-        "month_form": month_form,
-        "entries": entries if entries else 0,
-        "total_work_time": (
-            format_duration(total_work_seconds) if total_work_seconds else 0
+    # Dynamic stat cards for user dashboard
+    user_stats = [
+        {
+            "title": "Total Time This Month",
+            "value": (
+                format_duration(total_work_seconds)
+                if total_work_seconds
+                else "0 hrs, 0 mins"
+            ),
+            "description": f"Across {entries.count()} working days",
+            "icon": "fas fa-clock",
+            "icon_color": "text-indigo-500",
+        },
+        {
+            "title": "Average Time Per Day",
+            "value": format_duration(need_time) if need_time else "0 hrs, 0 mins",
+            "description": "Daily average calculation",
+            "icon": "fas fa-chart-line",
+            "icon_color": "text-teal-500",
+        },
+        {
+            "title": "Working Days",
+            "value": entries.count(),
+            "description": "Excluding weekends & holidays",
+            "icon": "fas fa-calendar-alt",
+            "icon_color": "text-purple-500",
+        },
+        {
+            "title": "Working Average",
+            "value": format_duration(average_time) if average_time else "0 hrs, 0 mins",
+            "description": "8h 40m daily target",
+            "icon": "fas fa-bullseye",
+            "icon_color": "text-blue-500",
+        },
+    ]
+
+    # Dynamic target status
+    target_status = {
+        "title": (
+            "Target Met"
+            if average_time >= TARGET_WORK_TIME.total_seconds()
+            else "Target Not Met"
         ),
-        "average_work_time": (
-            format_duration(average_work_seconds) if average_work_seconds else 0
+        "message": (
+            "Great job! Your average work time meets the target of 8 hours and 40 minutes."
+            if average_time >= TARGET_WORK_TIME.total_seconds()
+            else f"You need to work an additional {format_duration(need_time) if need_time else '0 hrs, 0 mins'} per day to meet the target of 8 hours and 40 minutes."
         ),
-        "target_met": (
-            average_time >= TARGET_WORK_TIME.total_seconds()
-            if working_days_count
-            else False
+        "icon": (
+            "fas fa-check-circle"
+            if average_time >= TARGET_WORK_TIME.total_seconds()
+            else "fas fa-exclamation-circle"
         ),
-        "leaves": leaves,
-        "average_time": format_duration(average_time),
-        "time_needed": (
-            format_duration(need_time)
-            if entries and not average_time >= TARGET_WORK_TIME.total_seconds()
-            else "0 hrs, 0 mins"
+        "icon_color": (
+            "text-teal-500"
+            if average_time >= TARGET_WORK_TIME.total_seconds()
+            else "text-red-500"
         ),
-        "overtime": format_duration(overtime) if overtime else "0 hrs, 0 mins",
-        "total_users": total_users,
-        "total_worklogs": total_worklogs,
-        "total_expenses": total_expenses["total"],
-        "total_tasks": total_tasks,
-        "total_leaves": total_leaves,
-        "top_3_recent_activity": top_3_recent_activity,
     }
-    context["quick_actions"] = [
+
+    # Admin dashboard stats
+    total_users = User.objects.count()
+    total_worklogs = WorkTimeEntry.objects.count()
+    total_expenses = SalaryExpenses.objects.aggregate(total=Sum("salary"))["total"] or 0
+    total_tasks = Task.objects.count()
+    total_leaves = Leave.objects.count()
+
+    admin_stats = [
+        {
+            "title": "Total Users",
+            "value": total_users,
+            "description": "Active employees",
+            "icon": "fas fa-users",
+            "icon_color": "text-indigo-600",
+            "url": reverse("user-list"),
+            "is_currency": False,
+        },
+        {
+            "title": "Total TimeLogs",
+            "value": total_worklogs,
+            "description": "All months",
+            "icon": "fas fa-clipboard-list",
+            "icon_color": "text-teal-600",
+            "url": reverse("worktime"),
+            "is_currency": False,
+        },
+        {
+            "title": "Total Expenses",
+            "value": total_expenses,
+            "description": "All period",
+            "icon": "fas fa-dollar-sign",
+            "icon_color": "text-purple-600",
+            "url": reverse("expenses"),
+            "is_currency": True,
+        },
+        {
+            "title": "Total Tasks",
+            "value": total_tasks,
+            "description": "All projects",
+            "icon": "fas fa-tasks",
+            "icon_color": "text-blue-600",
+            "url": reverse("task-list"),
+            "is_currency": False,
+        },
+        {
+            "title": "Total Leaves",
+            "value": total_leaves,
+            "description": "All months",
+            "icon": "fas fa-leaf",
+            "icon_color": "text-indigo-600",
+            "url": reverse("leaves"),
+            "is_currency": False,
+        },
+    ]
+
+    # Top 3 active users (based on recent activity count)
+    top_3_active_users = (
+        User.objects.annotate(activity_count=Count("recentactivity"))
+        .order_by("-activity_count")[:3]
+        .values(
+            "username",
+            activity_description=Value(
+                "Most active this week", output_field=CharField()
+            ),
+        )
+    )
+
+    # Quick actions (already in view, reused)
+    quick_actions = [
         {
             "url": reverse("calculate-time"),
             "title": "Calculate Work Time",
@@ -565,6 +662,22 @@ def dashboard(request):
             "icon_color": "text-blue-500",
         },
     ]
+
+    context = {
+        "dashboard_title": "My Dashboard" if not request.user.is_staff else "Dashboard",
+        "dashboard_subtitle": (
+            f"Welcome back, {request.user.username}!"
+            if not request.user.is_staff
+            else "Overview of your organization's time tracking metrics."
+        ),
+        "month_form": month_form,
+        "user_stats": user_stats,
+        "quick_actions": quick_actions,
+        "target_status": target_status,
+        "admin_stats": admin_stats,
+        "top_3_recent_activity": RecentActivity.objects.order_by("-timestamp")[:3],
+        "top_3_active_users": top_3_active_users,
+    }
 
     return render(request, "worktime/dashboard.html", context)
 

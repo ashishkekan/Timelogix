@@ -8,11 +8,13 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="mb-12">
         <div class="flex justify-between items-center flex-col sm:flex-row">
-            {% if not user.is_staff %}
             <div class="text-center sm:text-left mb-4 sm:mb-0">
-                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 tracking-tight">My Dashboard</h2>
-                <p clasas="text-lg text-gray-600">Welcome back, {{ user.username }}!</p>
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 tracking-tight">
+                    {{ dashboard_title }}
+                </h2>
+                <p class="text-lg text-gray-600">{{ dashboard_subtitle }}</p>
             </div>
+            {% if not user.is_staff %}
             <div class="dashboard-preview p-4">
                 <form method="get" class="flex flex-row items-center gap-2">
                     <div class="w-auto">
@@ -27,129 +29,55 @@
 
     <div class="user-dashboard {% if user.is_staff %}hidden{% endif %}">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {% for stat in user_stats %}
             <div class="stat-card">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Total Time This Month</h4>
-                    <i class="fas fa-clock text-indigo-500 text-lg"></i>
+                    <h4 class="text-gray-500 font-medium text-sm uppercase">{{ stat.title }}</h4>
+                    <i class="{{ stat.icon }} text-lg {{ stat.icon_color }}"></i>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">{{ total_work_time }}</p>
-                <p class="text-gray-600 text-sm mt-2">Across {{ entries.count }} working days</p>
+                <p class="text-2xl font-bold text-gray-900">{{ stat.value }}</p>
+                <p class="text-gray-600 text-sm mt-2">{{ stat.description }}</p>
             </div>
-
-            <div class="stat-card">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Average Time Per Day</h4>
-                    <i class="fas fa-chart-line text-teal-500 text-lg"></i>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ time_needed }}</p>
-                <p class="text-gray-600 text-sm mt-2">Daily average calculation</p>
-            </div>
-
-            <div class="stat-card">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Working Days</h4>
-                    <i class="fas fa-calendar-alt text-purple-500 text-lg"></i>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ entries.count}}</p>
-                <p class="text-gray-600 text-sm mt-2">Excluding weekends & holidays</p>
-            </div>
-
-            <div class="stat-card">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Working Average</h4>
-                    <i class="fas fa-bullseye text-blue-500 text-lg"></i>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ average_time }}</p>
-                <p class="text-gray-600 text-sm mt-2">8h 40m daily target</p>
-            </div>
+            {% endfor %}
         </div>
+
         <div class="glass-card p-6 mb-12">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {% for action in quick_actions %}
-                    <a href="{{ action.url }}" class="stat-card text-decoration-none">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-gray-900 font-semibold text-sm uppercase">{{ action.title }}</h4>
-                            <i class="{{ action.icon }} text-lg {{ action.icon_color }}"></i>
-                        </div>
-                    </a>
+                <a href="{{ action.url }}" class="stat-card text-decoration-none">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-gray-900 font-semibold text-sm uppercase">{{ action.title }}</h4>
+                        <i class="{{ action.icon }} text-lg {{ action.icon_color }}"></i>
+                    </div>
+                </a>
                 {% endfor %}
             </div>
         </div>
+
         <div class="glass-card p-6">
-            {% if target_met %}
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-check-circle text-teal-500 text-xl"></i>
-                    <div>
-                        <h4 class="text-lg font-semibold text-gray-900">Target Met</h4>
-                        <p class="text-gray-600 text-sm">Great job! Your average work time meets the target of 8 hours and 40 minutes.</p>
-                    </div>
+            <div class="flex items-center space-x-3">
+                <i class="{{ target_status.icon }} text-xl {{ target_status.icon_color }}"></i>
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900">{{ target_status.title }}</h4>
+                    <p class="text-gray-600 text-sm">{{ target_status.message }}</p>
                 </div>
-            {% else %}
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
-                    <div>
-                        <h4 class="text-lg font-semibold text-gray-900">Target Not Met</h4>
-                        <p class="text-gray-600 text-sm">You need to work an additional {{ time_needed|default:"0h 0m" }} per day to meet the target of 8 hours and 40 minutes.</p>
-                    </div>
-                </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 
     <div class="admin-dashboard {% if not user.is_staff %}hidden{% endif %}">
-        <div class="flex justify-between items-center mb-12 flex-col sm:flex-row">
-            <div class="text-center sm:text-left mb-4 sm:mb-0">
-                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 tracking-tight">Dashboard</h2>
-                <p class="text-lg text-gray-600">Overview of your organization's time tracking metrics.</p>
-            </div>
-        </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <a href="{% url 'user-list' %}" class="stat-card text-decoration-none">
+            {% for stat in admin_stats %}
+            <a href="{{ stat.url }}" class="stat-card text-decoration-none">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Total Users</h4>
-                    <i class="fas fa-users text-indigo-600 text-lg"></i>
+                    <h4 class="text-gray-500 font-medium text-sm uppercase">{{ stat.title }}</h4>
+                    <i class="{{ stat.icon }} text-lg {{ stat.icon_color }}"></i>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">{{ total_users }}</p>
-                <p class="text-gray-600 text-sm mt-2">Active employees</p>
+                <p class="text-2xl font-bold text-gray-900">{{ stat.value|default_if_none:"0"|currency_format:stat.is_currency }}</p>
+                <p class="text-gray-600 text-sm mt-2">{{ stat.description }}</p>
             </a>
-
-            <a href="{% url 'worktime' %}" class="stat-card text-decoration-none">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Total TimeLogs</h4>
-                    <i class="fas fa-clipboard-list text-teal-600 text-lg"></i>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ total_worklogs }}</p>
-                <p class="text-gray-600 text-sm mt-2">All months</p>
-            </a>
-
-            <a href="{% url 'expenses' %}" class="stat-card text-decoration-none">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Total Expenses</h4>
-                    <i class="fas fa-dollar-sign text-purple-600 text-lg"></i>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ total_expenses|currency_format }}</p>
-                <p class="text-gray-600 text-sm mt-2">All period</p>
-            </a>
-
-            <a href="{% url 'task-list' %}" class="stat-card text-decoration-none">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Total Tasks</h4>
-                    <i class="fas fa-tasks text-blue-600 text-lg"></i>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ total_tasks }}</p>
-                <p class="text-gray-600 text-sm mt-2">All projects</p>
-            </a>
-
-            <a href="{% url 'leaves' %}" class="stat-card text-decoration-none">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-gray-500 font-medium text-sm uppercase">Total Leaves</h4>
-                    <i class="fas fa-leaf text-indigo-600 text-lg"></i>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">{{ total_leaves }}</p>
-                <p class="text-gray-600 text-sm mt-2">All months</p>
-            </a>
+            {% endfor %}
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
@@ -157,14 +85,14 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-4"><i class="fas fa-chart-line mr-2"></i>Recent Activity</h3>
                 <div class="activity-list">
                     {% for activity in top_3_recent_activity %}
-                        <div class="activity-item">
-                            <div class="activity-avatar">{{ activity.user.username|first|upper }}</div>
-                            <div class="activity-content flex-1">
-                                <p class="text-gray-900 font-medium text-sm">{{ activity.user.username }}</p>
-                                <p class="text-gray-600 text-sm">{{ activity.description }}</p>
-                            </div>
-                            <div class="text-gray-500 text-sm">{{ activity.timestamp|default:"Recent" }}</div>
+                    <div class="activity-item">
+                        <div class="activity-avatar">{{ activity.user.username|first|upper }}</div>
+                        <div class="activity-content flex-1">
+                            <p class="text-gray-900 font-medium text-sm">{{ activity.user.username }}</p>
+                            <p class="text-gray-600 text-sm">{{ activity.description }}</p>
                         </div>
+                        <div class="text-gray-500 text-sm">{{ activity.timestamp|default:"Recent" }}</div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
@@ -172,16 +100,16 @@
             <div class="glass-card p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4"><i class="fas fa-users mr-2"></i>Top 3 Active Users</h3>
                 <div class="users-list">
-                    {% for u in top_3_recent_activity %}
-                        <div class="user-item">
-                            <div class="user-rank">#{{ forloop.counter }}</div>
-                            <div class="user-avatar">{{ u.user.username|first|upper }}</div>
-                            <div class="user-content flex-1">
-                                <p class="text-gray-900 font-medium text-sm">{{ u.user.username }}</p>
-                                <p class="text-gray-600 text-sm">Most active this week</p>
-                            </div>
-                            <span class="badge">Active</span>
+                    {% for user in top_3_active_users %}
+                    <div class="user-item">
+                        <div class="user-rank">#{{ forloop.counter }}</div>
+                        <div class="user-avatar">{{ user.username|first|upper }}</div>
+                        <div class="user-content flex-1">
+                            <p class="text-gray-900 font-medium text-sm">{{ user.username }}</p>
+                            <p class="text-gray-600 text-sm">{{ user.activity_description }}</p>
                         </div>
+                        <span class="badge">Active</span>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
