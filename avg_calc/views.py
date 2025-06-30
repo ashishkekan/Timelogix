@@ -44,6 +44,9 @@ from avg_calc.models import (
 )
 from avg_calc.templatetags.custom_filter import format_duration
 
+from .forms import ChangePasswordForm, UserEditForm
+from .models import RecentActivity
+
 TARGET_WORK_TIME = timedelta(hours=8, minutes=40)
 
 
@@ -302,30 +305,46 @@ def logout(request):
 
 @login_required
 def profile_view(request):
+    user_form = UserEditForm(instance=request.user)
+    password_form = ChangePasswordForm()
+
     if request.method == "POST":
-        if "old_password" in request.POST:
-            change_password_form = ChangePasswordForm(request.POST)
-            if change_password_form.is_valid():
-                old_password = change_password_form.cleaned_data.get("old_password")
-                new_password = change_password_form.cleaned_data.get("new_password")
+        if "change_password" in request.POST:
+            password_form = ChangePasswordForm(request.POST)
+            if password_form.is_valid():
+                old_password = password_form.cleaned_data.get("old_password")
+                new_password = password_form.cleaned_data.get("new_password")
                 if request.user.check_password(old_password):
                     request.user.set_password(new_password)
                     request.user.save()
-                    log_activity(request.user, "Change Password")
+                    RecentActivity.objects.create(
+                        user=request.user, description="Changed password"
+                    )
                     update_session_auth_hash(request, request.user)
                     messages.success(request, "Your password was successfully updated!")
-                    log_activity(request.user, "Changed password")
                 else:
-                    messages.error(request, "Current password is incorrect")
-        else:
-            request.user.first_name = request.POST.get("first_name", "")
-            request.user.last_name = request.POST.get("last_name", "")
-            request.user.email = request.POST.get("email", "")
-            request.user.save()
-            messages.success(request, "Your details were successfully updated!")
-            log_activity(request.user, "Updated profile details")
+                    messages.error(request, "Current password is incorrect.")
+            else:
+                messages.error(
+                    request, "Please correct the errors in the password form."
+                )
+        elif "update_details" in request.POST:
+            user_form = UserEditForm(request.POST, instance=request.user)
+            if user_form.is_valid():
+                user_form.save()
+                RecentActivity.objects.create(
+                    user=request.user, description="Updated profile details"
+                )
+                messages.success(request, "Your details were successfully updated!")
+            else:
+                messages.error(
+                    request, "Please correct the errors in the profile form."
+                )
+        return redirect("profile")
 
     context = {
+        "user_form": user_form,
+        "password_form": password_form,
         "user": request.user,
     }
     return render(request, "registration/profile.html", context)
