@@ -115,7 +115,7 @@
         </div>
         <div class="mt-16 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-8">
             {% for plan in pricing.plans %}
-                <div class="glass-card relative p-8 rounded-2xl bg-white {% if plan.highlight %}transform scale-105 z-10{% endif %}">
+                <div class="glass-card relative p-8 rounded-2xl bg-white {% if plan.highlight %}transform scale-105 z-10{% endif %} flex flex-col">
                     {% if plan.badge %}
                         <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                             <span class="badge inline-flex items-center px-4 py-1 rounded-full text-xs font-semibold tracking-widest {{ plan.badge.class }} text-white">
@@ -132,7 +132,7 @@
                         <span class="text-xl font-medium text-gray-500">{{ plan.price.period }}</span>
                     </div>
                     <p class="mt-4 text-sm text-gray-500 text-center">{{ plan.description }}</p>
-                    <ul class="mt-6 space-y-4">
+                    <ul class="mt-6 space-y-4 flex-grow">
                         {% for feature in plan.features %}
                             <li class="flex items-start">
                                 <div class="flex-shrink-0">
@@ -142,7 +142,7 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    <div class="mt-8">
+                    <div class="mt-auto">
                         <a href="{{ plan.button.url }}" class="{{ plan.button.class }}">{{ plan.button.text }}</a>
                     </div>
                 </div>
