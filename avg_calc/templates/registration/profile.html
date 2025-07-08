@@ -1,7 +1,5 @@
 {% extends "navbar/base.html" %}
-
 {% block title %}Profile{% endblock %}
-
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -15,7 +13,6 @@
                 <a href="#" class="btn-secondary mt-4 inline-block">Change Profile Picture</a>
             </div>
         </div>
-
         <div class="lg:col-span-2 space-y-8">
             <div class="glass-card p-6">
                 <h5 class="text-lg font-semibold text-gray-900 mb-4">Personal Details</h5>
@@ -25,7 +22,6 @@
                     <button type="submit" name="update_details" class="btn-primary">Update Details</button>
                 </form>
             </div>
-
             <div class="glass-card p-6">
                 <h5 class="text-lg font-semibold text-gray-900 mb-4">Change Password</h5>
                 <form method="post" action="{% url 'profile' %}">
@@ -34,7 +30,6 @@
                     <button type="submit" name="change_password" class="btn-primary">Change Password</button>
                 </form>
             </div>
-
             <div class="glass-card p-6">
                 <h5 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h5>
                 <p class="text-gray-600 text-sm">
