@@ -79,7 +79,7 @@ def home(request):
         "hero": {
             "title_lines": [
                 {"text": "Smart Time Tracking", "class": "block"},
-                {"text": "For Productive Teams", "class": "block text-indigo-200"},
+                {"text": "For Productive Teams", "class": "block text-indigo-600"},
             ],
             "description": "TimeLogix helps you analyze sitting time, track tasks, calculate salary expenses, and manage leaves - all in one powerful platform.",
             "buttons": [
