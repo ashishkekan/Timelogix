@@ -183,7 +183,7 @@ def home(request):
                 {
                     "name": "Starter",
                     "badge": {"text": "FREE", "class": "bg-[#14b8a6]"},
-                    "price": {"amount": "0", "currency": "$", "period": "/month"},
+                    "price": {"amount": "0", "currency": "₹", "period": "/month"},
                     "description": "Perfect for individuals getting started with time tracking",
                     "features": [
                         "Basic time tracking",
@@ -200,7 +200,7 @@ def home(request):
                 {
                     "name": "Professional",
                     "badge": {"text": "POPULAR", "class": "bg-[#5b21b6]"},
-                    "price": {"amount": "9", "currency": "$", "period": "/month"},
+                    "price": {"amount": "9", "currency": "₹", "period": "/month"},
                     "description": "For professionals who need advanced analytics",
                     "features": [
                         "Everything in Free",
@@ -219,7 +219,7 @@ def home(request):
                 },
                 {
                     "name": "Enterprise",
-                    "price": {"amount": "29", "currency": "$", "period": "/month"},
+                    "price": {"amount": "29", "currency": "₹", "period": "/month"},
                     "description": "For teams and organizations needing custom solutions",
                     "features": [
                         "Everything in Pro",
